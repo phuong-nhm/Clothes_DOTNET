@@ -1,0 +1,23 @@
+﻿#popUp {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5); /* Nền mờ */
+    z-index: 9999;
+}
+
+.signin-inner {
+    width: 80%; /* Chiều rộng popup */
+    max-width: 1200px; /* Chiều rộng tối đa */
+    max-height: 90%; /* Chiều cao tối đa */
+    overflow-y: auto; /* Cuộn dọc nếu nội dung quá nhiều */
+    background-color: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

@@ -1,0 +1,416 @@
+﻿@model PagedList.Core.IPagedList<Clothes_DOTNET.Models.Product>
+@using PagedList.Core;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css">
+@{
+    ViewBag.Title = "Sản phẩm";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+
+    var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+    <div class="d-block mb-4 mb-md-0">
+        <h2 class="h4">Danh sách sản phẩm</h2>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-outline-primary" id="addPopup">
+                <span class="fas fa-plus mr-2"></span>Thêm sản phẩm
+            </button>
+        </div>
+    </div>
+</div>
+<div class="table-settings mb-4">
+    <div class="row align-items-center justify-content-between">
+        <div class="col col-md-6 col-lg-3 col-xl-4">
+            <form>
+                <div class="input-group">
+                    <span class="input-group-text" id="basic-addon2"><span class="fas fa-search"></span></span>
+                    <input type="text" class="form-control" name="searchString" value="@ViewBag.searchString" id="exampleInputIconLeft" placeholder="Tên sản phẩm" aria-label="Search" aria-describedby="basic-addon2" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<div class="card card-body border-light shadow-sm table-wrapper table-responsive table-re pt-0 product">
+    <table class="table table-hover   height-md">
+        <thead>
+            <tr>
+                <th>ID Sản phẩm</th>
+                <th>Tên danh mục</th>
+                <th>Hình ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Import Price</th>
+                <th>Selling Price</th>
+                <th>Tùy chọn</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <!-- Item -->
+                <tr id="row-@item.ID">
+                    <td>
+                        <span class="font-weight-normal">@item.ID</span>
+                    </td>
+                    <td>
+                        <span class="font-weight-normal">@item.category.Name</span>
+                    </td>
+                    <td>
+                        <div class="image-clothes">
+                            <img src="@item.image" width="200" alt="Hình ảnh" />
+                        </div>
+                    </td>
+                    <td>
+                        <span class="font-weight-bold">@item.name</span>
+                    </td>
+                    <td>
+                        <span class="font-weight-bold">@string.Format(info, "{0:c0}", item.importprice)</span>
+                    </td>
+                    <td>
+                        <span class="font-weight-bold">@string.Format(info, "{0:c0}", item.sellprice)</span>
+                    </td>
+                   
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="icon icon-sm">
+                                    <span class="fas fa-ellipsis-h icon-dark"></span>
+                                </span>
+                                <span class="sr-only">Danh mục lựa chọn</span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <button class="dropdown-item change" onclick="loadData(@item.ID)"><span class="fas fa-edit mr-2"></span>Chỉnh sửa</button>
+                                <button class="dropdown-item text-danger delete" onclick="deleteData(@item.ID)"><span class="fas fa-trash-alt mr-2"></span>Xóa</button>
+                                @*@if (tk.LoaiTaiKhoan)
+                            {
+                            <button class="dropdown-item text-danger delete" onclick="deleteData(@item.MaSP)"><span class="fas fa-trash-alt mr-2"></span>Xóa</button>
+                            }*@
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        @*VARIAnt*@
+                      
+                            <button type="button" class="btn btn-sm btn-outline-primary" id="addVariantButton" data-product-id="@item.ID">
+                                <span class="fas fa-plus mr-2"></span>Variant
+                            </button>
+            
+                    </td>
+                </tr>
+            }
+        </tbody>s
+    </table>
+    <div class="card-footer px-3 border-0 d-flex align-items-center justify-content-between">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= Model.PageCount; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+
+
+
+@*POPUP them*@
+@section Popup {
+    <div class="popUp" id="popUp">
+        <div class="col-12 col-cl-10">
+            <div class="card card-body bg-white border-light shadow-sm mb-3">
+                <h2 class="h5 mb-1">Thông tin sản phẩm</h2>
+                @*FORM 1*@
+                <form id="add-form" onsubmit="return themProduct()">
+                    <div class="row">
+                        <div class="col-md-6 mb-1">
+                            <div class="uploadImage">
+                                <img class="img-fluid img-thumbnail rounded" id="output" src="" alt="Chưa có hình ảnh" style="width:200px; height: 200px; object-fit: cover; object-position: top;">
+                                <label for="imageFile" class="btn btn-sm btn-primary mr-2 ml-2 mt-2"><span class="fas fa-upload mr-1"></span> Chọn hình ảnh</label>
+                                <input type="file" id="imageFile" onchange="loadFile(event)">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-1">
+                            <div>
+                                <label for="nameProduct">Tên sản phẩm</label>
+                                <input class="form-control" type="text" name="NamePd"
+                                       placeholder="Tên sản phẩm" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-1">
+                            <div>
+                                <label for="IDCategory">Danh mục</label>
+                                <select class="form-select mb-0" name="CategoryId" id="IDCategory"
+                                        aria-label="category select example" required>
+                                    @foreach (var item in ViewBag.Category)
+                                    {
+                                        <option value="@item.IDCategory">@item.NameCategory</option>
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-1">
+                            <div>
+                                <label for="priceProduct">Giá bán sản phẩm</label>
+                                <input class="form-control" type="number" name="SellingPrice"
+                                       min="0" step="any" value="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-1">
+                            <div>
+                                <label for="priceProduct">Giá nhập sản phẩm</label>
+                                <input class="form-control" type="number" name="ImportPrice"
+                                       min="0" step="any" value="0" required>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="add-message"></p>
+                    <div class="mt-2">
+                        <button type="submit" class="btn btn-primary">Thêm</button>
+                        <div class="btn border-primary cancelPopup" id="cancelPopup">Hủy</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+}
+@*POPUP thêm variant*@
+@section addVariant{
+    <div class="popUp" id="addVariantPopUp" style="display:none;width:50%;">
+        <div class="col-12 col-cl-10">
+            <div class="card card-body bg-white border-light shadow-sm mb-3">
+                <h2 class="h5 mb-1">Thông tin sản phẩm</h2>
+                @*FOrm 2*@
+
+                <form id="form-2" class="form-2" name="form-2" onsubmit="return themVariant()">
+                    <input type="hidden" id="productId" name="productId" value="productId" />
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div>
+                                <label for="color">Màu sắc</label>
+                                <div class="list-group d-flex flex-row">
+                                    @foreach (var item in ViewBag.Color)
+                                    {
+                                        <div class="list-group-item justify-content-center align-item d-flex flex-column w-25 form-2">
+                                            <label for="color-@item.ColorName" class="text-center">
+                                                <input type="checkbox" name="SelectedColors" id="color-@item.ColorName" value="@item.Id" />
+                                                @item.ColorName
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <div>
+                                <label for="size">Kích thước</label>
+                                <div class="list-group d-flex flex-row">
+                                    @foreach (var item in ViewBag.Size)
+                                    {
+                                        <div class="list-group-item justify-content-center align-items-center d-flex flex-column w-25 form-2">
+                                            <label for="size-@item.SizeName" class="text-center">
+                                                <input type="checkbox" class="kichco-checkbox" name="SelectedSizes" id="size-@item.SizeName" value="@item.Id" />
+                                                @item.SizeName
+                                            </label>
+                                            <div class="mt-2 quantity-group" style="display: none;">
+                                                <label for="quantity-@item.SizeName">Số lượng:</label>
+                                                <input class="form-control kichco-quantity" type="number" name="quantity" id="quantity-@item.SizeName" value="0" min="0" />
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Thêm</button>
+                        <div class="btn border-primary cancelPopUp" id="cancelPopUp">Hủy</div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+@*Sua popup*@
+@section changePopup {
+    <div class="changePopUp" id="changePopUp">
+        <div class="col-12 col-cl-10">
+            <div class="card card-body bg-white border-light shadow-sm mb-4">
+                <h2 class="h5 mb-4">Chỉnh sửa thông tin sản phẩm</h2>
+                <form id="update-form" onsubmit="return suaProduct()">
+                    <input type="hidden" name="IdPd" id="IdPd" />
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="uploadImage">
+                                <img class="img-fluid img-thumbnail rounded " id="Image" src="" alt="noImage" style="width:200px; height: 200px; object-fit: cover; object-position: top;">
+                                <label for="updateImage" class="btn btn-sm btn-primary mr-2 ml-2 mt-2"><span class="fas fa-upload mr-1"></span> Chọn hình ảnh</label>
+                                <input type="file" name="imageFile" id="updateImage" onchange="loadFileUpdate(event)">
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div>
+                                <label for="nameProduct">Tên sản phẩm</label>
+                                <input class="form-control" id="NamePd" type="text"
+                                       placeholder="Tên sản phẩm" value="" name="NamePd" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div>
+                                <label for="IDCategory">Danh mục</label>
+                                <select class="form-select mb-0" name="CategoryId" id="IDCategory"
+                                        aria-label="category select example" required>
+                                    @foreach (var item in ViewBag.Category)
+                                    {
+                                        <option value="@item.IDCategory">@item.NameCategory</option>
+                                    }
+                                </select>
+                            </div>
+                           
+                        </div>
+                        <div class="col-md-6 mb-1">
+                            <div>
+                                <label for="priceProduct">Giá bán sản phẩm</label>
+                                <input class="form-control" type="number" name="SellingPrice" id="SellingPrice"
+                                       min="0" step="any" value="0" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-1">
+                            <div>
+                                <label for="priceProduct">Giá nhập sản phẩm</label>
+                                <input class="form-control" type="number" name="ImportPrice" id="ImportPrice"
+                                       min="0" step="any" value="0" required>
+                            </div>
+                        </div>
+                    </div>                             
+                    <p id="update-message"></p>
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-secondary">Chỉnh sửa</button>
+                        <div class="btn border-primary cancelPopup" id="cancelPopup">Hủy</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+
+@section deletePopup {
+    <div class="deletePopUp" id="deletePopUp">
+        <section class="vh-lg-100 d-flex align-items-center">
+            <div class="container">
+                <div class="row justify-content-center form-bg-image">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="signin-inner my-3 my-lg-0 bg-white shadow-soft border rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+                            <h6 class="form-group mb-4 text-center fa-1x">
+                                Bạn có chắc chắn muốn xóa sản phẩm này không ?
+                            </h6>
+                            <input type="hidden" value="" id="delete-masp" />
+                            <p id="delete-message"></p>
+                            <div class="row d-flex flex-row">
+                                <button type="submit" class="btn btn-block btn-danger" onclick="xoaSanPham()">Chắc chắn</button>
+                                <div class="btn btn-block border-primary cancelPopup" id="cancelPopupDel">Hủy</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+}
+@section Script {
+    <script>
+        var loadFile = function (event) {
+            var image = document.getElementById("output");
+            image.src = URL.createObjectURL(event.target.files[0]);
+        };
+
+        var loadFileUpdate = function (event) {
+            var image = document.getElementById("Image");
+            image.src = URL.createObjectURL(event.target.files[0]);
+        };
+        // Hiển thị kích cỡ khi chọn màu
+        $(document).on("change", ".color-checkbox", function () {
+            const sizeGroup = $(this).closest(".form-color").find(".size-group");
+            if ($(this).is(":checked")) {
+                sizeGroup.show(); // Hiển thị nhóm kích cỡ
+            } else {
+                sizeGroup.hide(); // Ẩn nhóm kích cỡ
+                sizeGroup.find(".kichco-checkbox").prop("checked", false); // Bỏ chọn tất cả size
+                sizeGroup.find(".quantity-group").hide(); // Ẩn các trường số lượng
+                sizeGroup.find(".kichco-quantity").val(0); // Đặt số lượng về 0
+            }
+        });
+
+        // Hiển thị số lượng khi chọn size
+        $(document).on("change", ".kichco-checkbox", function () {
+            const quantityGroup = $(this).closest(".form-2").find(".quantity-group");
+            if ($(this).is(":checked")) {
+                quantityGroup.show(); // Hiển thị trường số lượng
+                quantityGroup.find(".kichco-quantity").val(0); // Mặc định số lượng là 1
+            } else {
+                quantityGroup.hide(); // Ẩn trường số lượng
+                quantityGroup.find(".kichco-quantity").val(0); // Đặt số lượng về 0
+            }
+        });
+
+        @*Đóng mở Popup variant*@
+            document.addEventListener("DOMContentLoaded", function () {
+                // Chọn tất cả các nút thêm Variant
+                const addVariantButtons = document.querySelectorAll("#addVariantButton");
+
+                addVariantButtons.forEach(button => {
+                    button.addEventListener("click", function () {
+                        // Lấy ID sản phẩm từ data-product-id
+                        const productId = this.getAttribute("data-product-id");
+
+                        // Hiển thị popup thêm variant
+                        const popup = document.getElementById("addVariantPopUp");
+                        popup.style.display = "block";
+
+                        // Có thể gửi ID sản phẩm vào form trong popup (nếu cần)
+                        const hiddenInput = document.querySelector("#form-2 input[name='productId']");
+                        if (hiddenInput) {
+                            hiddenInput.value = productId;
+                        }
+
+                        console.log("Product ID:", productId);
+                    });
+                });
+
+                // Đóng popup
+                document.getElementById("cancelPopUp").addEventListener("click", function () {
+                    const popup = document.getElementById("addVariantPopUp");
+                    popup.style.display = "none";
+                });
+            });
+
+
+
+    </script>
+
+    <script src="~/Assets/Admin/js/Product.js"></script>
+    <script src="~/Assets/Admin/js/addPopUp.js"></script>
+   
+    
+
+}

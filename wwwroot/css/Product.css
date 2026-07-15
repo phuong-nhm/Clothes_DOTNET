@@ -1,0 +1,97 @@
+/* Các thiết lập chung */
+.product-item {
+    margin: 15px 0; /* Khoảng cách giữa các sản phẩm */
+    padding: 10px;
+    background-color: #f9f9f9; /* Màu nền của mỗi sản phẩm */
+    border: 1px solid #ddd; /* Đường viền nhẹ */
+    border-radius: 8px; /* Bo góc */
+    text-align: center;
+}
+
+.product-link {
+    text-decoration: none; /* Loại bỏ gạch chân cho liên kết */
+}
+
+/* Định dạng cho ảnh sản phẩm */
+.product-image {
+    width: 100%; /* Chiếm toàn bộ chiều rộng phần tử */
+    max-height: 330px !important; /* Đảm bảo ảnh không quá cao */
+    object-fit: cover; /* Cắt ảnh sao cho vừa vặn */
+    border-radius: 8px; /* Bo góc ảnh */
+}
+
+/* Tên sản phẩm */
+.product-name {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 10px;
+}
+
+/* Giá cũ và giá mới */
+.product-price {
+    font-size: 14px;
+    color: #888;
+    margin-top: 5px;
+}
+
+.product-price > .product-old-price {
+    text-decoration: line-through; /* Gạch ngang cho giá cũ */
+    color: #ccc;
+}
+
+.product-price > .product-new-price {
+    font-weight: bold;
+    color: #f44336; /* Màu đỏ cho giá mới */
+}
+
+/* Nút "Mua ngay" */
+.buy-button {
+    background-color: #f44336; /* Màu đỏ */
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    margin-top: 10px;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.buy-button:hover {
+    background-color: #d32f2f; /* Màu đỏ đậm khi hover */
+}
+
+/* Định dạng cho các sản phẩm trong cột */
+@media (min-width: 576px) {
+    .product-item {
+        width: 50%; /* Mỗi sản phẩm chiếm 50% chiều rộng màn hình */
+        float: left;
+    }
+}
+
+@media (min-width: 768px) {
+    .product-item {
+        width: 33.33%; /* Mỗi sản phẩm chiếm 1/3 chiều rộng màn hình */
+    }
+}
+
+@media (min-width: 992px) {
+    .product-item {
+        width: 23%;
+        height: auto; /* Mỗi sản phẩm chiếm 1/4 chiều rộng màn hình */
+    }
+}
+
+/* Đảm bảo các phần tử trong container chính căn chỉnh tốt */
+#show_data {
+    display: flex;
+    flex-wrap: wrap;
+    overflow-x: auto; /* Thêm thanh cuộn ngang */
+    white-space: nowrap; /* Ngăn xuống dòng, tất cả nằm trên 1 dòng */
+    padding: 5px; /* Thêm khoảng cách bên trong */
+    gap: 15px; /* Khoảng cách giữa các sản phẩm */
+    scroll-behavior: smooth; /* Hiệu ứng cuộn mượt */
+    justify-content: flex-start; 
+}

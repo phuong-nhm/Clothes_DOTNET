@@ -1,0 +1,61 @@
+﻿@{
+    ViewData["Title"] = "All Product";
+}
+@{
+    Layout = "_Layout";
+}
+@using Clothes_DOTNET.Models
+@model IEnumerable<Product>
+<link rel="stylesheet" href="~/css/site.css" />
+<link rel="stylesheet" href="~/css/Index.css" />
+<link rel="stylesheet" href="~/css/Product.css" />
+<style>
+    /* Định dạng chung cho các thẻ a trong bộ lọc */
+.category-link-a {
+    text-decoration: none; /* Xóa gạch dưới */
+    color: #333; /* Màu chữ mặc định */
+    font-weight: 500; /* Tạo chữ đậm */
+    margin-left: 15px; /* Khoảng cách giữa các liên kết */
+    padding: 5px 10px; /* Khoảng cách trong các liên kết */
+    border-radius: 5px; /* Bo góc cho các liên kết */
+    background-color: #fff;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Hiệu ứng mượt mà khi hover */
+}
+
+/* Hiệu ứng khi hover vào các thẻ a */
+.category-link-a:hover {
+    background-color: #ea2a3d; /* Màu nền khi hover */
+    color: #fff; /* Màu chữ khi hover */
+}
+
+/* Định dạng cho phần dropdown select */
+#category {
+    width: 15%;
+    margin-left: 20px;
+    padding: 5px;
+    font-size: 1rem;
+}
+
+</style>
+<div class="filters" style="background:#eff2ea;margin-top:10px;padding:5px;border-radius: 5px;">
+    <form>
+        <label for="category">Sắp xếp theo</label>
+        <a href="#"class="category-link-a">Phổ Biến</a>
+        <a href="#" class="category-link-a">Mới nhất</a>
+        <a href="#" class="category-link-a">Bán chạy</a>
+        <select id="category" name="category" style="width:15%;margin-left:20px">
+            <option value="">Giá</option>
+            <option value="price_asc">Giá tăng dần</option>
+            <option value="price_asc">Giá giảm dần</option>
+        </select>
+    </form>
+</div>
+<div id="show_data" class="row">
+</div>
+<div id="pagination">
+</div>
+@section scripts{
+    <script src="~/js/Getproduct.js"></script>
+}
+  <script src="~/js/Index.js" asp-append-version="true"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.css"></script>

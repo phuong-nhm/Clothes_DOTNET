@@ -1,0 +1,373 @@
+﻿@model PagedList.Core.IPagedList<Clothes_DOTNET.Models.Sale>
+@using PagedList.Core;
+ <link href="~/Content/PagedList.css" rel="stylesheet" type="text/css">
+
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+<!-- Thêm DataTables -->
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.21/css/jquery.dataTables.min.css">
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.21/js/jquery.dataTables.min.js"></script>
+@{
+    ViewBag.Title = "Sản phẩm sale";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+
+    var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+    <div class="d-block mb-4 mb-md-0">
+        <h2 class="h4">Danh sách sản phẩm sale</h2>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group">
+            <button type="button" class="btn btn-sm btn-outline-primary" id="addSale">
+                <span class="fas fa-plus mr-2"></span>Thêm phiếu sale
+            </button>
+        </div>
+    </div>
+</div>
+<div class="table-settings mb-4">
+    <div class="row align-items-center justify-content-between">
+        <div class="col col-md-6 col-lg-3 col-xl-4">
+            <form>
+                <div class="input-group">
+                    <span class="input-group-text" id="basic-addon2"><span class="fas fa-search"></span></span>
+                    <input type="text" class="form-control" name="searchString" value="@ViewBag.searchString" id="exampleInputIconLeft" placeholder="Tên sản phẩm" aria-label="Search" aria-describedby="basic-addon2" />
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+@*Show phiếu sale*@
+<div class="card card-body border-light shadow-sm table-wrapper table-responsive table-re pt-0 product">
+    <table class="table table-hover height-md">
+        <thead>
+            <tr>
+                <th>ID phiếu sale</th>
+                <th>ID Sản phẩm</th>
+                <th>Hình ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Discount Percent</th>
+                <th>Tùy chọn</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model) 
+            {
+                <tr id="row-@item.ID">
+                    <td>
+                        <span class="font-weight-normal">@item.ID</span>
+                    </td>
+                    <td>
+                        <span class="font-weight-normal">@item.ProductId</span>  <!-- Hiển thị ID sản phẩm -->
+                    </td>
+                    <td>
+                        <div class="image-clothes">
+                            <!-- Hiển thị hình ảnh sản phẩm -->
+                            <img src="@item.product.image" width="200" alt="Hình ảnh" />
+                        </div>
+                    </td>
+                    <td>
+                        <span class="font-weight-bold">@item.product.name</span>  <!-- Hiển thị tên sản phẩm -->
+                    </td>
+                    <td>
+                        <span class="font-weight-bold">@item.discountpercentage<i class="fa fa-percent"></i></span>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="icon icon-sm">
+                                    <span class="fas fa-ellipsis-h icon-dark"></span>
+                                </span>
+                                <span class="sr-only">Danh mục lựa chọn</span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <button class="dropdown-item change" id="updateSale" onclick="loadData(@item.ID)"><span class="fas fa-edit mr-2"></span>Chỉnh sửa</button>
+                                <button class="dropdown-item text-danger delete" id="deletePopup" onclick="deleteData(@item.ID)"><span class="fas fa-trash-alt mr-2"></span>Xóa</button>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+    <div class="card-footer px-3 border-0 d-flex align-items-center justify-content-between">
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                @if (Model.HasPreviousPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                    </li>
+                }
+
+                @for (int i = 1; i <= Model.PageCount; i++)
+                {
+                    <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                    </li>
+                }
+
+                @if (Model.HasNextPage)
+                {
+                    <li class="page-item">
+                        <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+</div>
+
+
+
+<style>
+.popUp {
+    max-height: 80vh; /* Chiều cao tối đa chiếm 80% chiều cao màn hình */
+    overflow-y: auto; /* Hiển thị thanh cuộn khi nội dung vượt quá chiều cao */
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    width: 50%; /* Chiều rộng của popup */
+}
+</style>
+@* Popup thêm phiếu sale *@
+@section Popup {
+  
+    <div class="popUp popupPrivate"   style="width:50%;display:none" id="addSalePopUp">
+       
+        <section class="d-flex align-items-center">
+         
+            <div class="container">
+                <div class="row justify-content-center form-bg-image">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div style="background-color:beige;width:800px;" class="signin-inner my-3 my-lg-0 bg-white shadow-soft rounded border-light  p-lg-5 ">
+                            <div class="text-center text-md-center mb-4 mt-md-0">
+                                <h1 class="mb-0 h5 text-popup">Tạo Phiếu Sale</h1>
+                            </div>
+                            <form id="add-form" onsubmit="return addSale()">
+                                <!-- Form -->
+                                <div class="form-group mb-4">
+                                    <hr />@*                            
+                                    *@
+                                    <div  class="card card-body border-light shadow-sm table-wrapper table-responsive table-re pt-0 product">
+                                        <label for="CategoryClaim">Chọn sản phẩm sale</label>
+                                        @{
+
+                                            int totalPages = ViewBag.TotalPages ?? 1;
+                                            int currentPage = ViewBag.CurrentPage ?? 1;
+                                        }
+                                        <table style="max-height: 300px; overflow-y: auto; display: block;" class="table table-hover height-md">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Tên Sản Phẩm</th>
+                                                    <th>Ảnh</th>
+                                                    <th>Hành Động</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in ViewBag.Product) 
+                                                {
+                                                    <tr>
+                                                        <td>@item.IdPd</td>
+                                                        <td>@item.NamePd</td>
+                                                        <td>
+                                                            <img src="@item.Image" alt="Hình ảnh sản phẩm" width="100" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="checkbox" value="@item.IdPd" />
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+
+                                    
+                                    <!--Nhap thong tin sale-->
+                                    <div class="pt-5 input-group">
+                                            <label style="padding-right:10px;padding-top:2px">Nhập % Sale: </label>
+
+                                           <input type="text" id="percentage" oninput="addPercentageSymbol()" /></div>
+
+                                            <script>
+                                              
+                                                function addPercentageSymbol() {
+                                                    const input = document.getElementById('percentage');
+                                                    if (input.value && !input.value.endsWith('%')) {
+                                                        input.value = input.value.replace('%', '') + '%';
+                                                    }
+                                                }
+                                            </script>
+                                            <br />
+                                            <label>Ngày bắt đầu: </label>
+                                        <div style="padding-bottom:5px">
+                                            <input type="date" id="startDate" name="startDate" />
+                                        </div>
+                                        <label>Ngày kết thúc: </label>
+                                        <div style="padding-bottom:5px">
+                                            <input type="date" id="endDate" name="endDate" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!-- End of Form -->
+
+                                <button type="submit" class="btn btn-block btn-primary">Tạo Phiếu Sale</button>
+                                <div class="btn btn-block border-primary cancelPopup" id="cancelPopUp">Hủy</div>
+                            </form>
+
+                            <!-- Phân trang -->
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+     
+        </section>
+
+    </div>
+}
+
+@*Sua Sale*@
+@section changePopUp {
+    <div class="popUp popupPrivate" style="width:50%;display:none" id="updateSalePopUp">
+        <section class="d-flex align-items-center">
+            <div class="container">
+                <div class="row justify-content-center form-bg-image">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div style="background-color:beige;width:800px;" class="signin-inner my-3 my-lg-0 bg-white shadow-soft rounded border-light  p-lg-5 ">
+                            <div class="text-center text-md-center mb-4 mt-md-0">
+                                <h1 class="mb-0 h5 text-popup">Sửa Phiếu Sale</h1>
+                            </div>
+                            <form id="update-form" onsubmit="return updateSale()">
+                                <!-- Form -->
+                                <div class="form-group mb-4">
+                                    <hr />@*
+                                *@
+                                    <div class="card card-body border-light shadow-sm table-wrapper table-responsive table-re pt-0 product">
+                                        <label for="CategoryClaim">Chọn sản phẩm sale</label>
+                                        @{
+
+                                            int totalPages = ViewBag.TotalPages ?? 1;
+                                            int currentPage = ViewBag.CurrentPage ?? 1;
+                                        }
+                                        <table style="max-height: 300px; overflow-y: auto; display: block;" class="table table-hover height-md">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Tên Sản Phẩm</th>
+                                                    <th>Ảnh</th>
+                                                    <th>Hành Động</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach (var item in ViewBag.Product)
+                                                {
+                                                    <tr>
+                                                        <td>@item.IdPd</td>
+                                                        <td>@item.NamePd</td>
+                                                        <td>
+                                                            <img src="@item.Image" alt="Hình ảnh sản phẩm" width="100" />
+                                                        </td>
+                                                        <td>
+                                                            <input type="checkbox" value="@item.IdPd" />
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+
+
+                                        <!--Nhap thong tin sale-->
+                                        <div class="pt-5 input-group">
+                                            <label style="padding-right:10px;padding-top:2px">Nhập % Sale: </label>
+
+                                            <input type="text" id="percentage" oninput="addPercentageSymbol()" />
+                                        </div>
+
+                                        <script>
+
+                                            function addPercentageSymbol() {
+                                                const input = document.getElementById('percentage');
+                                                if (input.value && !input.value.endsWith('%')) {
+                                                    input.value = input.value.replace('%', '') + '%';
+                                                }
+                                            }
+                                        </script>
+                                        <br />
+                                        <label>Ngày bắt đầu: </label>
+                                        <div style="padding-bottom:5px">
+                                            <input type="date" id="startDate" name="startDate" />
+                                        </div>
+                                        <label>Ngày kết thúc: </label>
+                                        <div style="padding-bottom:5px">
+                                            <input type="date" id="endDate" name="endDate" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!-- End of Form -->
+
+                                <button type="submit" class="btn btn-block btn-primary">Sửa Phiếu Sale</button>
+                                <div class="btn btn-block border-primary cancelPopup" id="cancelPopUpUpdate">Hủy</div>
+                            </form>
+
+                            <!-- Phân trang -->
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+    </div>
+}
+
+@section deletePopup {
+    <div class="deletePopUp" id="deletePopUpSale">
+        <section class="vh-lg-100 d-flex align-items-center">
+            <div class="container">
+                <div class="row justify-content-center form-bg-image">
+                    <div class="col-12 d-flex align-items-center justify-content-center">
+                        <div class="signin-inner my-3 my-lg-0 bg-white shadow-soft border rounded border-light p-4 p-lg-5 w-100 fmxw-500">
+                            <h6 class="form-group mb-4 text-center fa-1x">
+                                Bạn có chắc chắn muốn xóa phiếu Sale này không ?
+                            </h6>
+                            <input type="text" value="" id="delete-saleid" />
+                            <p id="delete-message"></p>
+                            <div class="row d-flex flex-row">
+                                <button type="submit" class="btn btn-block btn-danger" onclick="deleteSale()">Chắc chắn</button>
+                                <div class="btn btn-block border-primary cancelPopup" id="cancelPopUpDelete">Hủy</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+}
+
+@section Script {
+    <script>
+        var loadFile = function (event) {
+            var image = document.getElementById("output");
+            image.src = URL.createObjectURL(event.target.files[0]);
+        };
+
+        var loadFileUpdate = function (event) {
+            var image = document.getElementById("anhsp");
+            image.src = URL.createObjectURL(event.target.files[0]);
+        };
+       
+
+    </script>
+    <script src="~/Assets/Admin/js/addPopUp.js"></script>
+    <script src="~/Assets/Admin/js/pickColor.js"></script>
+    <script src="~/Assets/Admin/js/Sale.js"></script>
+}

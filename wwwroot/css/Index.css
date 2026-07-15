@@ -1,0 +1,105 @@
+/* Container for each product item */
+
+.product-container{
+    display: flex;
+    overflow-x: auto; /* Thêm thanh cuộn ngang */
+    white-space: nowrap; /* Ngăn xuống dòng, tất cả nằm trên 1 dòng */
+    padding: 8px; /* Thêm khoảng cách bên trong */
+    gap: 12px; /* Khoảng cách giữa các sản phẩm */
+    scroll-behavior: smooth; /* Hiệu ứng cuộn mượt */
+    justify-content: flex-start; 
+}
+.product-container {
+    margin-top: px;  /* Khoảng cách dưới banner */
+}
+.product-item {
+    width: calc(100% / 4 - 16px); /* Đặt chiều rộng cho mỗi item sản phẩm */
+    padding: 12px; /* Khoảng cách bên trong */ /* Khoảng cách giữa các sản phẩm */
+    border: 1px solid #ddd; /* Đường viền mỏng xung quanh mỗi item */
+    border-radius: 8px; /* Góc bo tròn */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ để nổi bật sản phẩm */
+    text-align: center; /* Căn giữa nội dung */
+    background-color: #fff; /* Màu nền */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng khi hover */
+}
+
+/* Hiệu ứng khi hover */
+.product-item:hover {
+    transform: translateY(-5px); /* Dịch chuyển nhẹ lên trên */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Đổ bóng mạnh hơn khi hover */
+}
+
+/* Style cho ảnh sản phẩm */
+.product-item .product-image {
+    width: 100%; /* Chiếm toàn bộ chiều rộng của item */
+    height: 330px; /* Chiều cao cố định cho ảnh */
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+    border-radius: 8px; /* Góc bo tròn cho ảnh */
+    margin-bottom: 8px; /* Khoảng cách giữa ảnh và phần nội dung */
+}
+
+/* Style cho tên sản phẩm */
+.product-item .product-name {
+    font-size: 13px; /* Kích thước chữ */
+    font-weight: bold; /* Làm đậm tên sản phẩm */
+    margin-bottom: 6px; /* Khoảng cách giữa tên và mô tả */
+    color: #333; /* Màu chữ */
+    text-transform: capitalize; /* Viết hoa chữ cái đầu tiên */
+    text-align: right; /* Căn chữ sang phải */
+}
+
+/* Style cho mô tả sản phẩm */
+.product-item .product-description {
+    font-size: 14px; /* Kích thước chữ cho mô tả */
+    color: #777; /* Màu chữ nhạt cho mô tả */
+    margin-bottom: 12px; /* Khoảng cách giữa mô tả và giá */
+    line-height: 1.5; /* Khoảng cách giữa các dòng */
+    text-align: right; /* Căn chữ sang phải */
+}
+
+/* Style cho giá sản phẩm */
+.product-item .product-price {
+    font-size: 16px; /* Kích thước chữ cho giá */
+    font-weight: bold; /* Làm đậm giá */
+    color: #e74c3c; /* Màu đỏ cho giá */
+    margin-top: 12px; /* Khoảng cách giữa mô tả và giá */
+    text-align: right; /* Căn chữ sang phải */
+}
+.text-container {
+    display: flex; /* Sử dụng Flexbox */
+    justify-content: center; /* Căn giữa theo chiều ngang */
+    align-items: center; /* Căn giữa theo chiều dọc */
+}
+.text-center {
+    border: 2px solid #ddd; /* Tạo viền màu xám nhạt */
+    border-radius: 18px; /* Bo tròn 4 góc */
+    padding: 16px; /* Tạo khoảng cách giữa nội dung và viền */
+    display: inline-block; /* Giúp viền vừa với nội dung bên trong */
+    text-align: center; /* Căn giữa nội dung */
+    background-color: #f9f9f9; /* Thêm màu nền nhạt cho đẹp */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ */
+}
+.buy-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    margin-top: 12px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+    background-color: #e74c3c; /* Màu đỏ cho nút */
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.buy-button i {
+    margin-right: 8px; /* Khoảng cách giữa icon và chữ */
+}
+
+.buy-button:hover {
+    background-color: #c0392b; /* Màu đậm hơn khi hover */
+}
+

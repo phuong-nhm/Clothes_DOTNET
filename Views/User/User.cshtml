@@ -1,0 +1,237 @@
+@{
+    ViewData["Title"] = "Login Page";
+}
+@{
+    Layout = "_Layout";
+}
+<style>
+    .user-profile-container {
+    display: flex;
+    max-width: 1200px;
+    margin: 0 auto 20px;
+    gap: 30px;
+    border-radius: 15px;
+    margin-top: 10px;
+}
+
+.profile-sidebar {
+    width: 25%;
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-avatar img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.name-card {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    margin-top: 0;
+}
+
+.profile-menu {
+    width: 100%;
+}
+
+.menu-item {
+    padding: 12px 15px;
+    text-align: center;
+    background-color: #f1f1f1;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.menu-item:hover {
+    background-color: #eaeaea;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-content {
+    flex: 1;
+    background-color: #fff;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-content h2 {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 10px;
+}
+
+.form-group label {
+    width: 150px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input,
+.form-group select {
+    flex: 1;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+
+button {
+    padding: 12px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.edit-button,
+.save-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.cancel-button {
+    background-color: #6c757d;
+    color: white;
+    margin-left: 15px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.cancel-button:hover {
+    background-color: #565e64;
+}
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+</style>
+
+@using CLothes_DOTNET.Models
+@model IEnumerable<Products>
+<div class="user-profile-container">
+    <div class="profile-sidebar">
+        <div class="profile-avatar">
+            <img src="https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg" alt="User Avatar">
+            <p class="name-card">@ViewBag.UserLastName</p>
+        </div>
+
+        <div class="profile-menu">
+            <div class="menu-item">Thông tin cá nhân</div>
+            <div class="menu-item" id="showOrders">Đơn hàng của tôi</div>
+            <div class="menu-item" id="logout">Đăng xuất tài khoản</div>
+        </div>
+    </div>
+
+    <div class="profile-content">
+        <div id="personalInfo">
+            <h2>Thông tin cá nhân</h2>
+            <form>
+                <div class="form-group">
+                    <label>Họ và tên:</label>
+                    <span id="fullName">@ViewBag.UserFirstName @ViewBag.UserLastName</span>
+                </div>
+                <div class="form-group">
+                    <label>Số điện thoại:</label>
+                    <span id="phoneNumber">@ViewBag.UserPhoneNumber</span>
+                </div>
+                <div class="form-group">
+                    <label>Giới tính:</label>
+                    <span id="gender">@ViewBag.UserGender</span>
+                </div>
+                <div class="form-group">
+                    <label>Ngày sinh:</label>
+                    <span id="birthDay">@ViewBag.UserBirthDay</span>
+                </div>
+                <button type="button" class="edit-button" id="startEdit">Chỉnh sửa thông tin</button>
+            </form>
+        </div>
+
+        <div id="editForm" style="display:none;">
+            <h2>Chỉnh sửa thông tin cá nhân</h2>
+            <form id="userForm">
+                <div class="form-group">
+                    <label>Họ và tên:</label>
+                    <input id="firstName" placeholder="Họ">
+                    <input id="lastName" placeholder="Tên">
+                    <div class="error-message" id="firstNameError" style="display:none;">Họ phải có ít nhất 2 ký tự.</div>
+                    <div class="error-message" id="lastNameError" style="display:none;">Tên phải có ít nhất 2 ký tự.</div>
+                </div>
+                <div class="form-group">
+                    <label>Số điện thoại:</label>
+                    <input id="phoneNumberInput" type="text">
+                    <div class="error-message" id="phoneError" style="display:none;">Số điện thoại phải là dãy số từ 10 đến 12 chữ số.</div>
+                </div>
+                <div class="form-group">
+                    <label>Giới tính:</label>
+                    <select id="isMale">
+                        <option value="true">Nam</option>
+                        <option value="false">Nữ</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Ngày sinh:</label>
+                    <input id="birthDayInput" type="date">
+                </div>
+                <button type="button" class="save-button" id="saveProfile">Lưu thông tin</button>
+                <button type="button" class="cancel-button" id="cancelEdit">Hủy</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#startEdit').click(function() {
+            $('#personalInfo').hide();
+            $('#editForm').show();
+        });
+
+        $('#cancelEdit').click(function() {
+            $('#editForm').hide();
+            $('#personalInfo').show();
+        });
+
+        $('#saveProfile').click(function() {
+            // Validate and save form data
+            var firstName = $('#firstName').val();
+            var lastName = $('#lastName').val();
+            if(firstName.length < 2) {
+                $('#firstNameError').show();
+            } else {
+                $('#firstNameError').hide();
+            }
+            if(lastName.length < 2) {
+                $('#lastNameError').show();
+            } else {
+                $('#lastNameError').hide();
+            }
+            // Add other validation and AJAX save logic as needed
+        });
+    });
+</script>

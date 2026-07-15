@@ -1,0 +1,213 @@
+﻿@model PagedList.Core.IPagedList<Clothes_DOTNET.Models.Order>
+@using PagedList.Core;
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css">
+@{
+    ViewBag.Title = "Đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var chitiethoadon = ViewBag.product23 as IEnumerable<dynamic>;
+}
+
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4">
+    <div class="d-block mb-4 mb-md-0">
+
+        <h2 class="h4">Danh sách hóa đơn</h2>
+    </div>
+    <div class="btn-toolbar mb-2 mb-md-0">
+    </div>
+</div>
+<div class="table-settings mb-4">
+    <div class="row align-items-center justify-content-between">
+        <div class="col col-md-6 col-lg-3 col-xl-4">
+            <form>
+                <div class="input-group">
+                    <button class="input-group-text" type="submit" id="basic-addon2"><span class="fas fa-search"></span></button>
+                    <input type="date" class="form-control" name="searchString" value="@ViewBag.searchString" placeholder="Search" aria-label="Search" aria-describedby="basic-addon2">
+                    <select class="form-control" name="status">
+                        <option value="">Tất cả hóa đơn</option>
+                        <option @(ViewBag.Status == 0 ? "selected" : "") value="0">Đã hủy</option>
+                        <option @(ViewBag.Status == 1 ? "selected" : "") value="1">Đang chuẩn bị</option>
+                        <option @(ViewBag.Status == 2 ? "selected" : "") value="2">Đang giao</option>
+                        <option @(ViewBag.Status == 3 ? "selected" : "") value="3">Đã thanh toán</option>
+                    </select>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@*SHOW HD *@
+<div class="card card-body border-light shadow-sm table-wrapper table-responsive pt-0">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Tên khách hàng</th>
+                <th>Ngày đặt</th>
+                <th>Địa chỉ nhận</th>
+                <th>Trạng thái</th>
+                <th>Tùy chọn</th>
+            </tr>
+        </thead>
+       <tbody>
+            <!-- Item -->
+            @foreach (var item in Model)
+            {
+                <tr class="group-info">
+                    <td>
+                        @item.IDOrder
+                    </td>
+                    <td>
+                        <span class="font-weight-normal">@item.FullName</span>
+                    </td>
+                    <td><span class="font-weight-normal">@item.OrderDate.ToString()</span></td>
+                    <td><span class="font-weight-normal">@item.Address</span></td>
+                    <td>
+                        <span class="font-weight-normal text-danger">
+                            <select id="hd-trangthai-update-" onchange="doiTrangThai(this, '@item.IDOrder')">
+                                    <option value="0" @(item.Status == 0 ? "selected" : "")>Đã bị hủy</option>
+                                    <option value="1" @(item.Status == 1 ? "selected" : "")>Đang chuẩn bị</option>
+                                    <option value="2" @(item.Status == 2 ? "selected" : "")>Đang giao</option>
+                                    <option value="3" @(item.Status == 3 ? "selected" : "")>Đã thanh toán</option>
+                            </select>
+                        </span>
+                    </td>
+                    <td>
+                        <div class="btn-group">
+                            <button class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="icon icon-sm">
+                                    <span class="fas fa-ellipsis-h icon-dark"></span>
+                                </span>
+                                <span class="sr-only">Danh mục lựa chọn</span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <button class="dropdown-item infoBill" onclick="loadData(@item.IDOrder)"><span class="fas fa-eye mr-2"></span>Chi tiết hóa đơn</button>
+                                @if (item.Status != 0)
+                                {
+                                    <button class="dropdown-item text-danger change" type="button" onclick="huyDonHang(@item.IDOrder)"><span class="fas fa-trash-alt mr-2"></span>Hủy đơn hàng</button>
+                                }
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <nav>
+        <ul class="pagination">
+            @if (Model.HasPreviousPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber - 1 })">Previous</a>
+                </li>
+            }
+
+            @for (int i = 1; i <= Model.PageCount; i++)
+            {
+                <li class="page-item @(i == Model.PageNumber ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Index", new { page = i })">@i</a>
+                </li>
+            }
+
+            @if (Model.HasNextPage)
+            {
+                <li class="page-item">
+                    <a class="page-link" href="@Url.Action("Index", new { page = Model.PageNumber + 1 })">Next</a>
+                </li>
+            }
+        </ul>
+    </nav>
+</div>
+
+
+@*POP XEM HD*@
+@section Popup {
+    <div class="popUp" id="popUp">
+        <div class="col-12 col-cl-10">
+            <div class="card card-body bg-white border-light shadow-sm mb-4">
+                <h2 class="h5 mb-4">Chi tiết hóa đơn</h2>
+                <form id="orderForm">
+                    <div class="row">
+                        <input type="hidden" name="IDOder" id="hd-idnguoidat" value="" />
+                        <div class="col-md-6 mb-2">
+                            <div>
+                                <label for="category">Tên người đặt</label>
+                                <input class="form-control" id="hd-nguoidat" name="TenNguoiDat" placeholder="Tên người đặt" value="" readonly> </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div>
+                                <label for="nameProduct">Email</label>
+                                <input class="form-control" id="hd-email" name="email" placeholder="Email" value="" readonly disabled>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <div>
+                                <label for="dateBuy">Ngày đặt</label>
+                                <input class="form-control" id="hd-ngaydat" readonly type="text" value="" disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div>
+                                <label for="size">Trạng thái</label>
+                                <input class="form-control" id="hd-trangthai" type="text" readonly value="" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <div>
+                                <label for="phone">Số điện thoại</label>
+                                <input class="form-control" id="hd-sdt" type="text" value="" readonly disabled>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-2">
+                            <div>
+                                <label for="address">Địa chỉ nhận</label>
+                                <input class="form-control" id="hd-diachi" type="text" value="" readonly disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <label for="address">Danh sách sản phẩm mua</label>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Hình ảnh</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th>Giá</th>
+                                    <th>Số lượng</th>
+                                    <th>Tổng tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hd-body" height="50px">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="row">
+                        <div>
+                            <label for="note">Ghi chú</label>
+                            <textarea class="form-control" id="hd-ghichu" rows="3" disabled></textarea>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <div class="btn border-primary cancelPopup" id="cancelPopup">Thoát</div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+
+@section deletePopup {
+    <div class="deletePopUp" id="deletePopUp">
+    </div>
+
+}
+@section Script {
+    <script src="~/Assets/Admin/js/addPopupBill.js"></script>
+    <script src="~/Assets/Admin/js/Bill.js"></script>
+}

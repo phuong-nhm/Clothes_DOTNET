@@ -1,0 +1,95 @@
+@{
+    ViewData["Title"] = "Woman Page";
+}
+@{
+    Layout = "_Layout";
+}
+@using CLothes_DOTNET.Models
+@model IEnumerable<Products>
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đồ Nữ - Web Bán Hàng</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+        integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
+        crossorigin="anonymous" />
+    <link rel="stylesheet" href="~/css/Manpage.css" />
+    <title>@ViewData["Title"]</title>
+</head>
+<style>
+
+</style>
+<div class="man-container">
+    <div class="breadcrumb">
+        <a href="@Url.Action("Index", "Home")">Trang chủ</a> &gt; <a href="@Url.Action("WomanPage", "Sale")">Nữ</a>
+    </div>
+
+    <div class="content">
+        <!-- Phần bên trái (bộ lọc) -->
+        <div class="filters">
+            <h3>Bộ lọc</h3>
+            <form>
+                <label for="price">Giá:</label>
+                <input type="range" id="price" name="price" min="0" max="1000000" step="10000">
+                <label for="category">Danh mục:</label>
+                <select id="category" name="category">
+                    <option value="clothing">Trang phục</option>
+                    <option value="accessories">Phụ kiện</option>
+                    <option value="shoes">Giày dép</option>
+                </select>
+                <!-- Thêm các bộ lọc khác nếu cần -->
+            </form>
+        </div>
+
+        <!-- Phần bên phải (sản phẩm) -->
+        <div class="products">
+            <h2>Danh sách sản phẩm</h2>
+            <div class="product-container">
+                <!-- Products will be displayed here -->
+                @foreach (var product in Model)
+                {
+                    <div class="product-item">
+                         <!-- Thêm thẻ <a> bao quanh toàn bộ sản phẩm để chuyển hướng đến chi tiết -->
+                        <a href="@Url.Action("Product", "Sale", new { id = product.Id })" class="product-link">
+                        <img src="@Url.Content(product.ImageUrl)" alt="@product.Name" class="product-image">
+                        </a>
+                        <h2 class="product-name">@product.Name</h2>
+                        <p class="product-description">@product.Description</p>
+                        <p class="product-price">@product.Price.ToString("N0")đ</p> <!-- Format giá -->
+                        <!-- Nút mua hàng -->
+                        <button class="buy-button">
+                            <i class="fas fa-shopping-cart"></i> Mua ngay
+                        </button>
+                    </div>
+                }
+            </div>
+        </div>
+         <!-- Phân trang -->
+    
+    </div>
+</div>
+<div class="pagination">
+        @if (ViewBag.PageNumber > 1)
+        {
+            <a href="@Url.Action("Manpage", new { page = ViewBag.PageNumber - 1 })">Previous</a>
+        }
+
+        @for (int i = 1; i <= ViewBag.TotalPages; i++)
+        {
+            <a href="@Url.Action("Manpage", new { page = i })" class="@(i == ViewBag.PageNumber ? "current" : "")">@i</a>
+        }
+
+        @if (ViewBag.PageNumber < ViewBag.TotalPages)
+        {
+            <a href="@Url.Action("Manpage", new { page = ViewBag.PageNumber + 1 })">Next</a>
+        }
+    </div>
+<script src="site.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.css"></script>
+
+</html>

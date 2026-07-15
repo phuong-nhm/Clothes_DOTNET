@@ -1,0 +1,344 @@
+@model IEnumerable<dynamic>
+@using PagedList.Core;
+
+<link href="~/Content/PagedList.css" rel="stylesheet" type="text/css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script> <!-- Plugin hỗ trợ hiển thị nhãn -->
+
+<style>
+    /* Cải thiện kiểu cho trang tổng quan */
+    #chart-container {
+        margin: 0 auto;
+        max-width: 800px;
+    }
+
+    #chart-title {
+        text-align: left;
+        color: #333;
+        font-size: 23px;
+        margin-top: 20px;
+        font-weight: bold;
+    using System.Collections;
+    }
+
+    #summary-info {
+        display: flex;
+        justify-content: space-between;
+        /* Căn giữa các phần tử */
+        gap: 20px;
+        /* Khoảng cách giữa 2 phần tử */
+        margin-top: 20px;
+        width: 100%;
+    }
+
+    .summary-item {
+        display: flex;
+        align-items: center;
+        /* Căn chỉnh icon và văn bản theo chiều dọc */
+        padding: 10px 20px;
+        border: 2px solid #ddd;
+        /* Viền xung quanh */
+        border-radius: 8px;
+        /* Viền bo góc */
+        background-color: #f9f9f9;
+        /* Màu nền nhẹ */
+        width: 45%;
+        /* Chiều rộng mỗi phần tử */
+    }
+
+    .summary-item i {
+        font-size: 24px;
+        /* Kích thước icon */
+        color: #4CAF50;
+        /* Màu sắc icon */
+        margin-right: 10px;
+        /* Khoảng cách giữa icon và văn bản */
+    }
+
+    .summary-item p {
+        font-size: 18px;
+        margin: 0;
+        color: #333;
+    }
+
+
+    #year-selector {
+        text-align: left;
+        margin-top: 20px;
+    }
+
+    #year-selector label {
+        font-size: 16px;
+        color: #555;
+        margin-right: 10px;
+    }
+
+    #year-selector select {
+        padding: 10px;
+        font-size: 16px;
+        border-radius: 5px;
+        border: 1px solid #ddd;
+        cursor: pointer;
+        background-color: #fff;
+    }
+
+    /* Phần biểu đồ */
+    #chart-subtitle {
+        text-align: left;
+        color: #333;
+        font-size: 24px;
+        margin-top: 40px;
+    }
+
+    #revenueChart {
+        width: 100%;
+        height: 100%;
+        max-width: 800px;
+        margin: auto;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        background-color: #fff;
+    }
+
+    /* Phần tổng doanh thu và đơn hàng */
+    #summary-info strong {
+        color: #2c3e50;
+        font-weight: bold;
+    }
+</style>
+@{
+    ViewBag.Title = "Thống kê";
+    Layout = "~/Areas/Admin/Views/Shared/_LayoutAdmin.cshtml";
+    var info = System.Globalization.CultureInfo.GetCultureInfo("vi-VN");
+    var totalRevenue = ViewBag.TotalRevenue;
+    var totalOrders = ViewBag.TotalOrders;
+    var monthlyRevenue = ViewBag.MonthlyRevenue;
+    var totalQuantily = ViewBag.TotalQuantity;
+    var statusOrder = ViewBag.OderofSTT as IEnumerable<dynamic>;
+    var productSell = ViewBag.ProductTopSell as IEnumerable<dynamic>;
+    var months = new List<string>();
+    var revenues = new List<decimal>();
+    if (monthlyRevenue != null)
+    {
+        foreach (var item in monthlyRevenue)
+        {
+            months.Add($"{item.Month}/{item.Year}"); // Ví dụ "11/2024"
+            revenues.Add(item.Revenue);
+        }
+    }
+    Console.WriteLine("Months: " + string.Join(", ", months));
+    Console.WriteLine("Revenues: " + string.Join(", ", revenues));
+}
+<h1 id="chart-title">Thống kê Doanh thu bán hàng</h1>
+<div id="summary-info">
+    <div class="summary-item" style="box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2); /* Đổ bóng */">
+        <i class="fa-solid fa-money-bill"></i>
+        <p><strong>Tổng doanh thu:</strong> @String.Format("{0:0,0 VNĐ}", totalRevenue)</p>
+    </div>
+    <div class="summary-item"style="box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2); /* Đổ bóng */">
+        <i class="fa fa-shopping-cart"></i>
+        <p><strong>Tổng đơn hàng:</strong> @totalOrders đơn hàng</p>
+    </div>
+    <div class="summary-item"style="box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2); /* Đổ bóng */">
+        <i class="fa fa-shopping-cart"></i>
+        <p><strong>Tổng Sản phẩm bán ra:</strong> @totalQuantily sản phẩm</p>
+    </div>
+    <div class="summary-item"style="box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2); /* Đổ bóng */">
+        <i class="fa fa-shopping-cart"></i>
+        <p><strong>Tổng Sản phẩm bán ra:</strong> @totalQuantily sản phẩm</p>
+    </div>
+</div>
+<div class="hehehe" style="display: flex;">
+<div class="chart-tk" style="background-color: rgb(255, 255, 255);width: 60%;padding-top:0.02px;padding-bottom: 10px;margin-top: 10px;box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2);">
+    <!-- Dropdown list chọn năm -->
+    <form method="get" id="year-selector" style="margin-left: 20px;">
+        <label for="year">Chọn năm:</label>
+        <select id="year" name="year" onchange="this.form.submit()">
+            @for (int i = 2020; i <= DateTime.Now.Year; i++)
+            {
+                <option value="@i" @(i == ViewBag.SelectedYear ? "selected" : "")>@i</option>
+            }
+        </select>
+    </form>
+    <h3 id="chart-subtitle" style="text-align:center;">Biểu đồ doanh thu theo tháng</h3>
+    <div id="chart-container" style="width: 100%; height:70%;">
+        <canvas id="revenueChart"></canvas>
+    </div>
+</div>
+<div class="chart-stt" style="height: 65%;width:40%;margin-left: 30px;background-color:white;margin-top:10px;box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2);">
+    <h1 id="chart-subtitle-stt" style="text-align:center;font-size: 24px;">Trạng thái đơn hàng</h1>
+        <div style="width: 90%; margin: auto;">
+            <canvas id="doughnutChart"></canvas> <!-- Vùng hiển thị biểu đồ -->
+    </div>
+</div>
+</div>
+<div class="container-tabel" style="display:flex;width:100%;margin-top:10px;">
+    <div class="container-tabel" style="width: 60%;background-color: white;box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2);padding-top:10px;border-top: 4px solid #468be6; border-collapse: collapse;">
+        <h2 style="margin-left: 20px;font-size: 24px;">Top 10 Sản phẩm bán chạy</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="background-color: #f8f8f8;font-weight: bold;">ID</th>
+                    <th style="background-color: #f8f8f8;font-weight: bold;">Tên Sản Phẩm</th>
+                    <th style="background-color: #f8f8f8;font-weight: bold;">Số Lượng Bán Ra</th>
+                    <th style="background-color: #f8f8f8;font-weight: bold;">Giá bán</th>
+                </tr>
+            </thead>
+            <tbody>
+                 @if (productSell != null)
+                {
+                    @foreach (var product in productSell)
+                    {
+                        <tr>
+                            <td>@product.ProductID</td>
+                            <td>@product.ProductName</td>
+                            <td>@product.QuantityPD</td>
+                            <td>@product.Price</td>
+                        </tr>
+                        }
+                    }
+            </tbody>
+        </table>
+    </div>
+    <div class="container-table" style="width: 40%;background-color: white;box-shadow: 10px 10px 15px rgba(0, 0, 0, 0.2);padding-top:10px;margin-left: 30px;border-top: 4px solid #b0c4de;  /* Màu nhẹ - bạn có thể thay đổi màu này */
+        border-collapse: collapse;">
+        <h2 style="margin-left: 20px ;font-size: 24px;">Top 10 Sản phẩm bán chạy</h2>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="background-color: #f8f8f8;font-weight: bold;">ID</th>
+                    <th style="background-color: #f8f8f8;font-weight: bold;">Tên Sản Phẩm</th>
+                    <th style="background-color: #f8f8f8;font-weight: bold;">Số Lượng Bán Ra</th>
+                    <th style="background-color: #f8f8f8;font-weight: bold;">Giá bán</th>
+                </tr>
+            </thead>
+            <tbody>
+                 @if (productSell != null)
+                {
+                    @foreach (var product in productSell)
+                    {
+                        <tr>
+                            <td>@product.ProductID</td>
+                            <td>@product.ProductName</td>
+                            <td>@product.QuantityPD</td>
+                            <td>@product.Price</td>
+                        </tr>
+                        }
+                    }
+            </tbody>
+        </table>
+    </div>
+</div>
+<script>
+    var ctx = document.getElementById('revenueChart').getContext('2d');
+    var revenueChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: @Html.Raw(Json.Serialize(months)),
+            datasets: [{
+                label: 'Doanh thu',
+                data: @Html.Raw(Json.Serialize(revenues)),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true,
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Doanh thu (VNĐ)'
+                    }
+                },
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Tháng/Năm'
+                    }
+                }
+            }
+        }
+    });
+</script>
+<script>
+    @{
+        var statusLabels = statusOrder.Select(x =>
+        {
+            return x.Status switch
+            {
+                0 => "Đã Đặt Hàng",
+                1 => "Đã Thanh Toán",
+                2 => "Đang Xử Lý",
+                3 => "Đang Giao Hàng",
+                4 => "Hoàn Thành",
+                5 => "Đã Hủy",
+                _ => "Không Xác Định" // Trường hợp khác
+            };
+        }).ToList();
+    }
+    // Dữ liệu nhãn và số liệu từ server
+    var orderLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(statusLabels));
+    var orderCounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(statusOrder.Select(x => x.Count)));
+
+    // Cấu hình biểu đồ Chart.js
+    var ctx = document.getElementById('doughnutChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut', // Biểu đồ bánh vòng
+        data: {
+            labels: orderLabels, // Nhãn (Status)
+            datasets: [{
+                data: orderCounts, // Dữ liệu số lượng
+                backgroundColor: [
+                    '#FF6384', // Màu 1
+                    '#36A2EB', // Màu 2
+                    '#FFCE56', // Màu 3
+                    '#4BC0C0', // Màu 4
+                    '#9966FF',  //Màu 5
+                    '#FF0FFF'  // Màu 6
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'right', // Đưa nhãn sang bên phải
+                    align: 'center', // Căn giữa các nhãn
+                    labels: {
+                        boxWidth: 20, // Kích thước ô vuông màu
+                        padding: 10, // Khoảng cách giữa các nhãn
+                        usePointStyle: true // Hiển thị dưới dạng chấm thay vì ô vuông
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (tooltipItem) {
+                            var value = tooltipItem.raw;
+                            var total = orderCounts.reduce((sum, val) => sum + val, 0);
+                            var percentage = ((value / total) * 100).toFixed(2);
+                            return `${tooltipItem.label}: ${value} orders (${percentage}%)`;
+                        }
+                    }
+                },
+                datalabels: {
+                    color: '#fff',
+                    formatter: (value, ctx) => {
+                        let total = ctx.chart.data.datasets[0].data.reduce((sum, val) => sum + val, 0);
+                        let percentage = ((value / total) * 100).toFixed(2);
+                        return `${percentage}%`;
+                    },
+                    font: {
+                        weight: 'bold',
+                        size: 14
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    });
+</script>

@@ -1,0 +1,250 @@
+@{
+    ViewData["Title"] = "Product Page";
+}
+@{
+    Layout = "_Layout";
+}
+@using CLothes_DOTNET.Models
+@model Products
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product - Web Bán Hàng</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+        integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
+        crossorigin="anonymous" />
+    <title>@ViewData["Title"]</title>
+</head>
+
+@{
+    ViewData["Title"] = "Chi Tiết Sản Phẩm";
+}
+<div class="breadcrumb">
+    <a href="@Url.Action("Index", "Home")">Trang chủ</a> &gt; <a href="@Url.Action("Product", "Sale")">Chi Tiết Sản
+        phẩm</a>
+</div>
+<div class="product-detail">
+    <div class="image-gallery">
+        <img id="main-image" src="@Url.Content(Model.ImageUrl)" alt="@Model.Name" class="main-image" />
+        <!-- Các ảnh phụ -->
+@*         <div class="additional-images" id="thumbnail-container">
+            <img src="@Url.Content(Model.ImageUrl)" alt="@Model.Name" class="thumbnail"
+                onclick="changeMainImage(this)" />
+
+            @foreach (var image in Model.AdditionalImages)
+            {
+                <img src="@Url.Content(image)" alt="@Model.Name" class="thumbnail" onclick="changeMainImage(this)" />
+            }
+        </div> *@
+    </div>
+
+    <div class="product-info">
+        <h1>@Model.Name</h1>
+        <p><strong>Mã sản phẩm:</strong> APN3516-XNG-XS</p>
+        <p><strong>Đánh giá:</strong> @Model.Rating ⭐️ (@Model.Sold lượt bán)</p>
+        <p><strong>Giá:</strong> @Model.Price.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))
+        </p>
+        <p><strong>Lượt xem:</strong> @Model.Views người</p>
+        <p><strong>Còn lại:</strong> @Model.Stock sản phẩm</p>
+
+        <hr />
+
+        <div>
+            <strong>Màu sắc:</strong>
+            <div class="colors">
+                @foreach (var color in Model.Colors)
+                {
+                    <span class="color-option">@color</span>
+                }
+            </div>
+        </div>
+
+        <div>
+            <strong>Kích thước:</strong>
+            <div class="sizes">
+                @foreach (var size in Model.Sizes)
+                {
+                    <button class="size-button">@size</button>
+                }
+            </div>
+        </div>
+
+        <div class="quantity">
+            <strong>Số lượng:</strong>
+            <button>-</button>
+            <input type="text" value="1" />
+            <button>+</button>
+        </div>
+
+        <div class="actions">
+            <button class="add-to-cart">Thêm vào giỏ</button>
+            <button class="buy-now">
+                 <a href="@Url.Action("Order", "User", new { id = Model.Id })" class="buy-link">
+                                <i class="fas fa-shopping-cart"></i> Mua ngay
+                </a>
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+    .buy-link {
+    color: white !important; /* Màu chữ */
+    text-decoration: none !important; /* Xóa gạch chân */
+}
+.buy-link:hover {
+    color: #6fe2ac; /* Màu khi hover (tuỳ chọn) */
+}
+    .product-detail {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+    }
+
+    .image-gallery {
+        width: 40%;
+    }
+
+    .main-image {
+        width: 60%;
+        height: auto;
+        border: 1px solid #ccc;
+    }
+
+    .additional-images {
+        display: flex;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .thumbnail {
+        width: 60px;
+        height: 60px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+    }
+
+    .product-info {
+        width: 60%;
+    }
+
+    .product-info h1 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .colors,
+    .sizes {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .color-option,
+    .size-button {
+        padding: 10px;
+        border: 1px solid #ccc;
+        cursor: pointer;
+    }
+
+    .color-option:hover,
+    .size-button:hover {
+        background-color: #f0f0f0;
+    }
+
+    .quantity {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        margin-bottom: 20px;
+    }
+
+    .quantity button {
+        padding: 5px 10px;
+    }
+
+    .quantity input {
+        width: 50px;
+        text-align: center;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .add-to-cart,
+    .buy-now {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        cursor: pointer;
+        color: #fff;
+    }
+
+    .add-to-cart {
+        background-color: #007bff;
+    }
+
+    .buy-now {
+        background-color: #ffc107;
+    }
+
+    .breadcrumb {
+        font-size: 16px;
+        color: #555;
+    }
+
+    .breadcrumb a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .breadcrumb a:hover {
+        text-decoration: underline;
+    }
+
+    .breadcrumb {
+        margin: 10px 0;
+    }
+</style>
+
+<script src="site.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.css"></script>
+
+<!-- JavaScript -->
+<script>
+    function changeMainImage(thumbnail) {
+        const mainImage = document.getElementById("main-image");
+        const thumbnailContainer = document.getElementById("thumbnail-container");
+
+        if (mainImage && thumbnailContainer) {
+            const currentMainImage = mainImage.src;
+            mainImage.src = thumbnail.src;
+
+            let existingThumbnail = Array.from(thumbnailContainer.children).find(img => img.src === currentMainImage);
+
+            if (!existingThumbnail) {
+                const newThumbnail = document.createElement("img");
+                newThumbnail.src = currentMainImage;
+                newThumbnail.alt = "Previous Main Image";
+                newThumbnail.classList.add("thumbnail");
+                newThumbnail.onclick = function () {
+                    changeMainImage(newThumbnail);
+                };
+                thumbnailContainer.appendChild(newThumbnail);
+            }
+        } else {
+            console.error("main-image or thumbnail-container not found.");
+        }
+    }
+</script>
+
+
+
+</html>

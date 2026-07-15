@@ -1,0 +1,255 @@
+html,body {
+  font-size: 14px;
+  height: 100%; /* Đảm bảo body chiếm toàn bộ chiều cao của cửa sổ */
+  margin: 0;
+
+}
+.header-text {
+  top: 0;
+  width: 100%;
+  height: 25px;
+  text-align: center;
+  background-color: #000000;
+  padding: 5px 0;
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffffff;
+}
+/* Top bar */
+.top-bar {
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  padding: 5px 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  font-size: 14px;
+}
+
+.top-bar a {
+  color: rgb(0, 0, 0);
+  text-decoration: none;
+}
+
+.top-bar a:hover {
+  color: #00c8ff;
+}
+
+.header {
+  background-color: #ffffff;
+  position: sticky;
+  top:0;
+  color: rgb(0, 0, 0);
+  padding: 10px 20px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: Arial, sans-serif;
+  z-index: 1000;
+}
+
+.header .logo img {
+  height: 40px; /* Điều chỉnh chiều cao logo tùy ý */
+  width: auto;
+}
+
+.header nav {
+  display: flex;
+  gap: 15px;
+}
+
+.header nav a {
+  color: rgb(0, 0, 0);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.header nav a:hover {
+  color: #00c8ff;
+}
+
+.header .highlight {
+  color: red;
+}
+
+.header .search-container {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.header .search-container input[type="text"] {
+  padding: 5px;
+  border: none;
+  background-color: #c9c2c2;
+  color: white;
+  outline: none;
+  border-radius: 3px;
+}
+
+.header .search-container button i {
+  background: white;
+  border: none;
+  color: rgb(0,0,0) !important;
+  border: none !important;
+  border-radius: 0 !important;
+  cursor: pointer;
+
+}
+
+.header .icon-container {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.header .icon-container a {
+  color: rgb(0, 0, 0)!important;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.header .icon-container a:hover {
+  color: #00c8ff !important;
+}
+
+.header .icon-container i {
+  font-size: 18px; /* Điều chỉnh kích thước icon khác */
+  color: rgb(0, 0, 0)!important;
+  
+}
+.bg-main{
+    background-color: #f7f8fa;
+}
+.bg-footer{
+    background-color: #24272e;
+    bottom: 0;
+}
+.footer{
+  bottom: 0;
+
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  margin-bottom: 60px;
+  background-color: #eaeaea;
+}
+/* Content/Site.css */
+.container {
+  width: 95%;
+  margin: 0 auto;
+}
+
+.profile-menu {
+  width: 100%;
+}
+
+.menu-item {
+  padding: 12px 15px;
+  text-align: center;
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  margin-bottom: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s, box-shadow 0.3s;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.menu-item:hover {
+  background-color: #eaeaea;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-content {
+  flex: 1;
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.profile-content h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 10px;
+}
+
+.form-group label {
+  width: 150px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+.form-group input,
+.form-group select {
+  flex: 1;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+}
+.edit-button,
+.save-button {
+  background-color: #91a8c0;
+  color: white;
+}
+
+.cancel-button {
+  background-color: #6c757d;
+  color: white;
+  margin-left: 15px;
+}
+.cancel-button:hover {
+  background-color: #565e64;
+}
+
+.error-message {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #24272e;
+  color: #fff;
+  margin-top: auto; /* Đảm bảo footer luôn ở cuối trang */
+}
+
+.footer .col-md-3 {
+  width: 25%;
+}
+
+.copyright {
+  background-color: #333;
+  color: white;
+  padding: 5px 0;
+  text-align: center;
+  font-size: 14px;
+}

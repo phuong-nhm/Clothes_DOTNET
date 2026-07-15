@@ -1,0 +1,235 @@
+﻿@{
+    ViewData["Title"] = "All Product";
+}
+@{
+    Layout = "_Layout";
+}
+@using System.Text.Json
+@using Clothes_DOTNET.Models
+@model List<ProductDTO>
+<style>
+    /* Định dạng tiêu đề giỏ hàng */
+    .cart-title {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+        margin-top: 20px;
+        text-align: center;
+        background-color: #eff2ea;
+    }
+
+    /* Định dạng bảng giỏ hàng */
+    .cart-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        background-color: #fff;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Định dạng các cột trong bảng */
+    .cart-table th,
+    .cart-table td {
+        padding: 12px;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+
+    /* Định dạng các tiêu đề cột */
+    .cart-table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+    }
+
+    /* Định dạng hàng giỏ hàng */
+    .cart-item {
+        transition: background-color 0.3s;
+    }
+
+    /* Thêm hiệu ứng hover cho hàng giỏ hàng */
+    .cart-item:hover {
+        background-color: #f1f1f1;
+    }
+
+    /* Định dạng màu sắc cho các cột */
+    .cart-item-name,
+    .cart-item-price,
+    .cart-item-quantity,
+    .cart-item-total {
+        font-size: 1rem;
+    }
+
+    /* Định dạng ảnh sản phẩm */
+    .product-image {
+        max-width: 100px;
+        max-height: 100px;
+        object-fit: cover;
+    }
+
+    /* Định dạng ô nhập số lượng */
+    .quantity-input {
+        width: 60px;
+        padding: 5px;
+        font-size: 1rem;
+    }
+
+    /* Định dạng các nút hành động */
+    .cart-item-actions .btn {
+        padding: 8px 16px;
+        margin: 0 5px;
+        font-size: 0.9rem;
+    }
+
+    /* Định dạng tổng tiền */
+    .cart-summary {
+        font-weight: bold;
+        background-color: #f8f9fa;
+    }
+
+    .cart-summary-label {
+        text-align: right;
+        padding-right: 20px;
+    }
+
+    .cart-summary-total {
+        font-size: 1.2rem;
+        color: #007bff;
+    }
+
+    /* Định dạng nút thanh toán */
+    #submitBtn {
+        width: 100%;
+        padding: 12px;
+        font-size: 1.1rem;
+        color: white;
+        background-color: #28a745;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    #submitBtn:hover {
+        background-color: #218838;
+    }
+</style>
+<h2 class="cart-title">GIỎ HÀNG</h2>
+
+@if (Model.Count > 0)
+{
+    decimal total = 0;
+    int stt = 1;
+
+    <table class="cart-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Sản phẩm</th>
+                <th>Hình ảnh</th>
+                <th>Màu sắc</th>
+                <th>Kích thước</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cartitem in Model)
+            {
+                var thanhtien = cartitem.count * cartitem.sellprice;
+                total += thanhtien;
+
+                <tr class="cart-item">
+                    <td class="cart-item-index">@stt</td>
+                    <td class="cart-item-name">@cartitem.name</td>
+                    <td class="cart-item-image">
+                        @if (cartitem.image != null)
+                        {
+                            var imageSrc = $"/UserImage/images/{cartitem.image}";
+                            <img src="@imageSrc" alt="@cartitem.name" class="product-image" />
+                        }
+                        else
+                        {
+                            <img src="" alt="Default Image" class="product-image" />
+                        }
+                    </td>
+                    <td class="cart-item-color">@cartitem.color</td>
+                    <td class="cart-item-size">@cartitem.size</td>
+                    <td class="cart-item-price">@cartitem.sellprice.ToString("n0")</td>
+                    <td class="cart-item-quantity">
+                        <input asp-for="@cartitem.count" id="@($"quantity-{cartitem.ID}")" class="quantity-input" />
+                    </td>
+                    <td class="cart-item-total">@thanhtien.ToString("n0")</td>
+                    <td class="cart-item-actions">
+                        <button class="btn btn-success update-cart-item" data-productid="@cartitem.productvariantid">
+                            Cập nhật
+                        </button>
+                        <a asp-controller="Sale" asp-action="RemoveCart" asp-route-productid="@cartitem.productvariantid"
+                            class="btn btn-danger">Xóa</a>
+                    </td>
+                </tr>
+            }
+            <tr class="cart-summary">
+                <td colspan="4" class="text-right cart-summary-label">Tổng tiền</td>
+                <td class="cart-summary-total">@total.ToString("n0")</td>
+                <td></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <form id="myForm">
+        <button class="btn btn-success" type="button" id="submitBtn">Thanh toán</button>
+    </form>
+    @*     <a asp-controller="Product" asp-action="Checkout" class="btn btn-success">Gửi đơn hàng</a> *@
+
+    @section Scripts {
+    <script>
+        $(document).ready(function () {
+            $(".updatecartitem").click(function (event) {
+                event.preventDefault();
+                var productid = $(this).attr("data-productid");
+                var quantity = $("#quantity-" + productid).val();
+                $.ajax({
+                    type: "POST",
+                    url: '/Sale/UpdateCart',
+                    data: {
+                        productid: productid,
+                        quantity: quantity
+                    },
+                    success: function (result) {
+                        window.location.href = "@Url.RouteUrl("cart")";
+                    }
+                });
+            });
+        });
+    </script>
+    }
+
+}
+
+else
+{
+    <p class="alert alert-danger">Giỏ hàng trống</p>
+}
+<script>
+    const data = @Html.Raw(JsonSerializer.Serialize(Model));
+    console.log(data);
+    console.log("Data to be sent:", JSON.stringify(data));
+    document.getElementById('submitBtn').addEventListener('click', function () {
+        $.ajax({
+            url: '/Cart/Dodata',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function (response) {
+                if (response.redirectToUrl) {
+                    window.location.href = response.redirectToUrl;
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+            }
+        });
+    });
+</script>

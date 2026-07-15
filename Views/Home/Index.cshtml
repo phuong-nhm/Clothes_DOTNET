@@ -1,0 +1,134 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@{
+    Layout = "_Layout";
+}
+@using CLothes_DOTNET.Models
+@model IEnumerable<Products>
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang chủ - Web Bán Hàng</title>
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/Index.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
+        integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
+        crossorigin="anonymous" />
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <title>@ViewData["Title"]</title>
+</head>
+<style>
+    .index-body {
+        height: 600px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        z-index: 1;
+    }
+    .banner-show {
+        width: 100%;
+        padding-top: 20px;
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+        height: 99%;
+    }
+    .list-images {
+        display: flex;
+        transition: 0.5s;
+    }
+    .btns {
+    position: absolute; /* Đảm bảo nó nằm trong .index-body */
+    top: 50%; /* Căn giữa theo chiều dọc */
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    z-index: 2; /* Đảm bảo các nút điều hướng nằm trên banner */
+    transform: translateY(-50%); /* Căn giữa các nút theo chiều dọc */
+}
+    .btn {
+        font-size: 30px;
+        color: #999;
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        transition: 0.5s;
+        cursor: pointer;
+        z-index: 2; 
+    }
+
+    .btn-left {
+        left: 5px;
+    }
+
+    .btn-right {
+        right: 5px;
+    }
+    .btn :hover {
+        color: white;
+    }
+    .index-banner {
+        position: absolute;
+        bottom: 10px;
+        display: flex;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2; 
+    }
+    .index-item {
+        border: 2px solid #999;
+        padding: 5px;
+        margin: 3px;
+        border-radius: 50%;
+    }
+
+    .active {
+        background-color: #999;
+    }
+    .a {
+        color: #ffffff !important;
+    }
+</style>
+
+<div class="index-body">
+    <!-- Banner -->
+    <div class="banner-show">
+        <div class="list-images">
+            <img class="img-banner" src="~/asset/bn1.png" alt="">
+            <img class="img-banner" src="~/asset/bn2.png" alt="">
+            <img class="img-banner" src="~/asset/bn3.png" alt="">
+            <img class="img-banner" src="~/asset/bn4.png" alt="">
+        </div>
+    </div>
+    <div class="btns">
+        <div class="btn-left btn"><i class='bx bx-left-arrow-circle'></i></div>
+        <div class="btn-right btn"><i class='bx bx-right-arrow-circle'></i></div>
+    </div>
+    <div class="index-banner">
+        <div class="index-item index-item-0 active"></div>
+        <div class="index-item index-item-1"></div>
+        <div class="index-item index-item-2"></div>
+        <div class="index-item index-item-3"></div>
+    </div>
+</div>
+<div class="text-container">
+    <div class="text-center">
+        <h1>Hàng Hot Tháng 11</h1>
+    </div>
+</div>
+<div id="show_data" class="row" style="gap: 10px;">
+</div>
+@section scripts{
+    <script src="~/js/Getproduct.js"></script>
+}
+<script src="~/js/Index.js" asp-append-version="true"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.css"></script>
+
+</html>

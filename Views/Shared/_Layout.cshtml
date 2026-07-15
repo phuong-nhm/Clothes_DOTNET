@@ -1,0 +1,132 @@
+﻿@using Clothes_DOTNET.Service
+@inject List_Category_Service list
+@{
+    var listgender=list.gender;
+
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - CLothes_DOTNET</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/CLothes_DOTNET.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="~/User/User.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    @RenderSection("header", required: false)
+</head>
+<body>
+    <div class="header-text">
+        <p id="changingText">Chào mừng bạn đến với cửa hàng của chúng tôi!</p>
+    </div>
+    <div class="top-bar">
+    <a href="#">Trợ giúp</a>
+    <a href="#">Đơn hàng của bạn</a>
+    <a href="#">Đăng ký hội viên</a>
+
+    </div>
+    <div class="separator" style=" border-top: 1px solid rgb(205, 198, 198);  "></div>
+    <section class="header clearfix">
+        <a href="/" class="logo">
+           <img src="~/asset/logo.png" alt="Logo" /> 
+        </a>
+        <nav>
+            <nav class="navbar navbar-expand-lg navbar-light bg-white">
+                <div class="container-fluid">
+                    <div class="collapse navbar-collapse">
+                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li class="nav-item dropdown">
+                                <a asp-area=""  asp-controller="Sale" asp-action="AllProduct" class="fs-4" >
+                                    Tất cả sản phẩm
+                                </a>
+                                @foreach( var e in listgender)
+                                    {
+                                        <a href="#" class="gender ms-3 fs-4" data-gender="@e">@e</a>
+                                    }
+                                <a href="#" class="sale highlight ms-3 fs-4" data-sale="sale">Giảm Giá</a>
+                                <ul id="categoryDropdown" class="dropdown-menu" aria-labelledby="navbarDropdown" style="width: 300px">
+                                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </nav>
+
+        <!-- Tìm kiếm -->
+        <div class="search-container">
+            <input type="search" id="txtsearch" placeholder="Tìm kiếm" />
+            <button type="button" id="btnsearch" class="btn btn-primary " style="background-color:white;border:none;" >
+                <i class="fas fa-search"></i>
+            </button>
+        </div>
+        <!-- Các biểu tượng khác -->
+        <div class="icon-container">
+            <a href="@Url.Action("User", "User")">
+                <i class="fas fa-user"></i> <!-- Icon người dùng -->
+            </a>
+            <a asp-controller="Sale" asp-action="Cart">
+                <i class="fas fa-shopping-cart"></i> <!-- Icon giỏ hàng -->
+            </a>
+            <a href="#">
+                <i class="fas fa-flag"></i> <!-- Icon quốc kỳ (thay bằng icon khác nếu có) -->
+            </a>
+
+        </div>
+        <partial name="_LoginPartial" />
+        </div>
+    </section>
+    
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+    <section class="footer clearfix bg-footer py-4">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3">
+                    <h3 class="text-light">Chúng Tôi là ai?</h3>
+                </div>
+                <div class="col-md-3">
+                    <h3 class="text-light">Chính Sách</h3>
+                </div>
+                <div class="col-md-3">
+                    <h3 class="text-light">Địa Chỉ</h3>
+                </div>
+                <div class="col-md-3">
+                    <h3 class="text-light">Hỗ trợ</h3>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="copyright clearfix bg-footer py-2 ">
+        <div class="container border-top border-light">
+            <div class="row">
+                <div class="col-md-6 text-light">
+                    Bảng quyền thuộc về Nhóm 11</div>
+                <div class="col-md-6"></div>
+            </div>
+        </div>
+    </section>
+@*      <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+@*     <script src="~/lib/jquery"></script> *@
+    @RenderSection("footer", required: false)
+@*      @RenderSection("scriptsproduct", required: false) *@
+    @await RenderSectionAsync("Scripts", required: false)
+@*     @section scripts {
+            <script src="~/js/Getproduct.js"></script>
+    } *@
+    <script src="~/js/Getproduct.js"></script>
+    <script src="~/js/Layout.js"></script>
+</body>
+
+</html>

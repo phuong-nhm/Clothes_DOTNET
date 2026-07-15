@@ -1,0 +1,175 @@
+﻿@{
+    ViewData["Title"] = "All Product";
+}
+@{
+    Layout = "_Layout";
+}
+@using Clothes_DOTNET.Models
+@using Microsoft.AspNetCore.Identity
+@using System.Text.Json
+@model List<ProductDTO>
+@inject UserManager<AppUser> UserManager
+<style>
+    .checkout-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    background-color: aliceblue;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.checkout-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.product-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.product-table th, .product-table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+}
+
+.product-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+.product-table .product-image {
+    max-width: 100px;
+    height: auto;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.btn-success {
+    background-color: #28a745;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+</style>
+<h2 class="checkout-title">Thanh Toán</h2>
+@if (User.Identity.IsAuthenticated)
+{
+    var user = await UserManager.GetUserAsync(User);
+    <form class="checkout-form">
+        <div class="form-group">
+            <label for="inputAddress">Địa chỉ</label>
+            <input type="text" class="form-control" id="inputAddress" name="Address" value="@user.Address">
+        </div>
+        <div class="form-group">
+            <label for="inputPhone">Số điện thoại</label>
+            <input type="text" class="form-control" id="inputPhone" name="Phone" value="@user.PhoneNumber">
+        </div>
+    </form>
+}
+else
+{
+    <div class="alert alert-warning" role="alert">
+        Bạn cần phải <a href="/login" class="alert-link">đăng nhập</a> để thực hiện thao tác này.
+    </div>
+}
+
+@if (Model.Count > 0)
+{
+    decimal total = 0;
+    int stt = 1;
+
+    <table class="product-table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Sản phẩm</th>
+                <th>Hình ảnh</th>
+                <th>Màu sắc</th>
+                <th>Kích thước</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Thành tiền</th>
+            </tr>
+        </thead>
+        <tbody style="background-color:white;">
+        @foreach (var cartitem in Model)
+        {
+            var thanhtien = cartitem.count * cartitem.sellprice;
+            total += thanhtien;
+
+            <tr>
+                <td>@(stt++)</td>
+                <td>@cartitem.name</td>
+                <td>
+                    @if (cartitem.image != null)
+                    {
+                        var imageSrc = $"/UserImage/images/{cartitem.image}";
+                        <img src="@imageSrc" alt="@cartitem.name" class="product-image" />
+                    }
+                    else
+                    {
+                        <img src="" alt="Default Image" class="product-image" />
+                    }
+                </td>
+                <td>@cartitem.color</td>
+                <td>@cartitem.size</td>
+                <td>@(cartitem.sellprice.ToString("n0"))</td>
+                <td>@cartitem.count</td>
+                <td>@(thanhtien.ToString("n0"))</td>
+            </tr>
+        }
+        <tr>
+            <td colspan="7" class="text-right">Tổng tiền</td>
+            <td>@(total.ToString("n0"))</td>
+        </tr>
+        </tbody>
+    </table>
+    <form id="checkoutForm">
+        <button class="btn btn-success" type="button" id="submitBtn">Xác Nhận Thanh Toán</button>
+    </form>
+}
+
+<script>
+    const data = @Html.Raw(JsonSerializer.Serialize(Model));
+
+    document.getElementById('submitBtn').addEventListener('click', function () {
+        const address = document.querySelector('input[name="Address"]').value;
+        const phone = document.querySelector('input[name="Phone"]').value;
+
+        $.ajax({
+            url: '/Cart/Pay',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                products: data,
+                address: address,
+                phone: phone
+            }),
+            success: function (response) {
+                if (response.success) {        
+                    alert(response.message);
+                } else {
+                    alert("Something went wrong: " + response.message);
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("Error:", error);
+            }
+        });
+    });
+</script>
