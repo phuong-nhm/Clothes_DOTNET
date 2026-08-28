@@ -150,7 +150,7 @@
                             <div>
                                 <label for="nameProduct">Tên sản phẩm</label>
                                 <input class="form-control" type="text" name="NamePd"
-                                       placeholder="Tên sản phẩm" required>
+                                       placeholder="Tên sản phẩm" required id="nameProduct">
                             </div>
                         </div>
                     </div>
@@ -162,7 +162,7 @@
                                         aria-label="category select example" required>
                                     @foreach (var item in ViewBag.Category)
                                     {
-                                        <option value="@item.IDCategory">@item.NameCategory</option>
+                                        <option value="@item.ID">@item.Name</option>
                                     }
                                 </select>
                             </div>
@@ -171,14 +171,14 @@
                             <div>
                                 <label for="priceProduct">Giá bán sản phẩm</label>
                                 <input class="form-control" type="number" name="SellingPrice"
-                                       min="0" step="any" value="0" required>
+                                       min="0" step="any" value="0" required id="priceProduct">
                             </div>
                         </div>
                         <div class="col-md-6 mb-1">
                             <div>
                                 <label for="priceProduct">Giá nhập sản phẩm</label>
                                 <input class="form-control" type="number" name="ImportPrice"
-                                       min="0" step="any" value="0" required>
+                                       min="0" step="any" value="0" required id="priceProduct">
                             </div>
                         </div>
                     </div>
@@ -212,7 +212,7 @@
                                     {
                                         <div class="list-group-item justify-content-center align-item d-flex flex-column w-25 form-2">
                                             <label for="color-@item.ColorName" class="text-center">
-                                                <input type="checkbox" name="SelectedColors" id="color-@item.ColorName" value="@item.Id" />
+                                                <input type="checkbox" name="SelectedColors" id="color-@item.ColorName" value="@item.ColorID" />
                                                 @item.ColorName
                                             </label>
                                         </div>
@@ -230,7 +230,7 @@
                                     {
                                         <div class="list-group-item justify-content-center align-items-center d-flex flex-column w-25 form-2">
                                             <label for="size-@item.SizeName" class="text-center">
-                                                <input type="checkbox" class="kichco-checkbox" name="SelectedSizes" id="size-@item.SizeName" value="@item.Id" />
+                                                <input type="checkbox" class="kichco-checkbox" name="SelectedSizes" id="size-@item.SizeName" value="@item.SizeID" />
                                                 @item.SizeName
                                             </label>
                                             <div class="mt-2 quantity-group" style="display: none;">
@@ -267,7 +267,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <div>
-                                <label for="nameProduct">Tên sản phẩm</label>
+                                <label for="NamePd">Tên sản phẩm</label>
                                 <input class="form-control" id="NamePd" type="text"
                                        placeholder="Tên sản phẩm" value="" name="NamePd" required>
                             </div>
@@ -281,7 +281,7 @@
                                         aria-label="category select example" required>
                                     @foreach (var item in ViewBag.Category)
                                     {
-                                        <option value="@item.IDCategory">@item.NameCategory</option>
+                                        <option value="@item.ID">@item.Name</option>
                                     }
                                 </select>
                             </div>
@@ -289,14 +289,14 @@
                         </div>
                         <div class="col-md-6 mb-1">
                             <div>
-                                <label for="priceProduct">Giá bán sản phẩm</label>
+                                <label for="SellingPrice">Giá bán sản phẩm</label>
                                 <input class="form-control" type="number" name="SellingPrice" id="SellingPrice"
                                        min="0" step="any" value="0" required>
                             </div>
                         </div>
                         <div class="col-md-6 mb-1">
                             <div>
-                                <label for="priceProduct">Giá nhập sản phẩm</label>
+                                <label for="ImportPrice">Giá nhập sản phẩm</label>
                                 <input class="form-control" type="number" name="ImportPrice" id="ImportPrice"
                                        min="0" step="any" value="0" required>
                             </div>

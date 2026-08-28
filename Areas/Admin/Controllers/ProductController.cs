@@ -10,6 +10,7 @@ using System.Runtime.Intrinsics.Arm;
 
 namespace CLothes_DOTNET.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class ProductController : Controller
     {
         private readonly MyDbContext db;
@@ -17,7 +18,7 @@ namespace CLothes_DOTNET.Areas.Admin.Controllers
         {
             this.db = db;
         }
-        [Area("Admin")]
+
         public ActionResult Index(string searchString, int page = 1, int pageSize = 9)
         {
 
@@ -25,7 +26,7 @@ namespace CLothes_DOTNET.Areas.Admin.Controllers
             ViewBag.Category = db.Categories.ToList();
             ViewBag.Size = db.Sizes.ToList();
             ViewBag.Color = db.Colors.Select(c => c);
-            var sanphams = db.Products.Include("Category").Select(s => s);
+            var sanphams = db.Products.Include(p=>p.category).Select(s => s);
             if (!String.IsNullOrEmpty(searchString))
             {
                 sanphams = sanphams.Where(sp => sp.name.Contains(searchString));

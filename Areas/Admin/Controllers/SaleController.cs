@@ -9,6 +9,7 @@ using PagedList.Core;
 
 namespace CLothes_DOTNET.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class SaleController : Controller
     {
         private readonly MyDbContext db;
@@ -18,7 +19,7 @@ namespace CLothes_DOTNET.Areas.Admin.Controllers
             this.db = db;
         }
 
-        [Area("Admin")]
+
         public IActionResult Index(int? page)
         {
             var products = db.Products.ToList();

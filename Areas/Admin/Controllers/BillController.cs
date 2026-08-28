@@ -7,7 +7,7 @@ using Clothes_DOTNET.Models;
 
 namespace CLothes_DOTNET.Areas.Admin.Controllers
 {
-
+    [Area("Admin")]
     public class BillController : Controller
     {
         private readonly MyDbContext db;
@@ -15,7 +15,7 @@ namespace CLothes_DOTNET.Areas.Admin.Controllers
         {
             this.db = db;
         }
-        [Area("Admin")]
+
         public IActionResult Index(string searchString, int page = 1, int pageSize = 5)
         {
             ViewBag.searchString = searchString;

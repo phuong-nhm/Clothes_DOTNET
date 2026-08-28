@@ -1,132 +1,173 @@
 ﻿@using Clothes_DOTNET.Service
 @inject List_Category_Service list
 @{
-    var listgender=list.gender;
-
+    var listgender = list.gender;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - CLothes_DOTNET</title>
+    <title>@ViewData["Title"] - Clothes_DOTNET</title>
+
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/CLothes_DOTNET.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="~/User/User.css" />
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     @RenderSection("header", required: false)
 </head>
-<body>
-    <div class="header-text">
-        <p id="changingText">Chào mừng bạn đến với cửa hàng của chúng tôi!</p>
-    </div>
-    <div class="top-bar">
-    <a href="#">Trợ giúp</a>
-    <a href="#">Đơn hàng của bạn</a>
-    <a href="#">Đăng ký hội viên</a>
+<body class="d-flex flex-column min-vh-100 bg-light">
 
+    <!-- Top Announcement Bar -->
+    <div class="bg-dark text-white text-center py-2 fs-6 fw-medium">
+        <span id="changingText">Chào mừng bạn đến với cửa hàng của chúng tôi!</span>
     </div>
-    <div class="separator" style=" border-top: 1px solid rgb(205, 198, 198);  "></div>
-    <section class="header clearfix">
-        <a href="/" class="logo">
-           <img src="~/asset/logo.png" alt="Logo" /> 
-        </a>
-        <nav>
-            <nav class="navbar navbar-expand-lg navbar-light bg-white">
-                <div class="container-fluid">
-                    <div class="collapse navbar-collapse">
-                        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            <li class="nav-item dropdown">
-                                <a asp-area=""  asp-controller="Sale" asp-action="AllProduct" class="fs-4" >
-                                    Tất cả sản phẩm
-                                </a>
-                                @foreach( var e in listgender)
-                                    {
-                                        <a href="#" class="gender ms-3 fs-4" data-gender="@e">@e</a>
-                                    }
-                                <a href="#" class="sale highlight ms-3 fs-4" data-sale="sale">Giảm Giá</a>
-                                <ul id="categoryDropdown" class="dropdown-menu" aria-labelledby="navbarDropdown" style="width: 300px">
-                                    <li><a class="dropdown-item" href="#">Another action</a></li>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li><a class="dropdown-item" href="#">Something else here</a></li>
-                                </ul>
+
+    <!-- Sub Header Utility Links -->
+    <div class="bg-white border-bottom py-1 fs-7">
+        <div class="container d-flex justify-content-end align-items-center gap-3">
+            <a href="#" class="text-secondary text-decoration-none small">Trợ giúp</a>
+            <span class="text-muted">|</span>
+            <a href="#" class="text-secondary text-decoration-none small">Đơn hàng của bạn</a>
+            <span class="text-muted">|</span>
+            <a href="#" class="text-secondary text-decoration-none small">Đăng ký hội viên</a>
+        </div>
+    </div>
+
+    <header class="bg-white sticky-top shadow-sm">
+        <nav class="navbar navbar-expand-lg navbar-light py-2">
+            <div class="container">
+                <!-- Logo -->
+                <a href="/" class="navbar-brand me-4 d-flex align-items-center">
+                    <img src="~/asset/logo.png" alt="Logo" style="height: 40px; width: auto; object-fit: contain;" />
+                </a>
+
+                <!-- Mobile Toggle Button -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar" aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Navbar Items -->
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-lg-center gap-1 fw-semibold">
+                        <li class="nav-item">
+                            <a asp-area="" asp-controller="Sale" asp-action="AllProduct" class="nav-link text-dark fs-6 px-2">
+                                Tất cả sản phẩm
+                            </a>
+                        </li>
+                        @foreach (var e in listgender)
+                        {
+                            <li class="nav-item">
+                                <a href="#" class="nav-link text-dark fs-6 px-2 gender" data-gender="@e">@e</a>
                             </li>
-                        </ul>
+                        }
+                        <li class="nav-item">
+                            <a href="#" class="nav-link text-danger fs-6 fw-bold px-2 sale highlight" data-sale="sale">Giảm Giá</a>
+                        </li>
+
+                        <li class="nav-item dropdown d-none" id="dropdownContainer">
+                            <ul id="categoryDropdown" class="dropdown-menu shadow" aria-labelledby="navbarDropdown" style="min-width: 220px;">
+                                <li><a class="dropdown-item" href="#">Another action</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <!-- Right Utility Area -->
+                    <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+
+                        <!-- Search Box (Đã fix lỗi vỡ nút) -->
+                        <div class="position-relative" style="width: 220px;">
+                            <input type="search" id="txtsearch" class="form-control form-control-sm rounded-pill pe-5 ps-3 bg-light border-0" placeholder="Tìm kiếm..." />
+                            <button type="button" id="btnsearch" class="bg-transparent border-0 text-secondary position-absolute end-0 top-50 translate-middle-y me-1 pe-2 p-0">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+
+                        <!-- Action Icons -->
+                        <div class="d-flex align-items-center gap-2">
+                            <a href="@Url.Action("User", "User")" class="text-dark p-1 text-decoration-none" title="Tài khoản">
+                                <i class="fas fa-user fs-5"></i>
+                            </a>
+                            <a asp-controller="Sale" asp-action="Cart" class="text-dark p-1 text-decoration-none position-relative" title="Giỏ hàng">
+                                <i class="fas fa-shopping-cart fs-5"></i>
+                            </a>
+                            <a href="#" class="text-dark p-1 text-decoration-none" title="Ngôn ngữ">
+                                <i class="fas fa-globe fs-5"></i>
+                            </a>
+                        </div>
+
+                        <!-- Partial View Login -->
+                        <div class="border-start ms-1 ps-3 d-flex align-items-center">
+                            <partial name="_LoginPartial" />
+                        </div>
                     </div>
                 </div>
-            </nav>
+            </div>
         </nav>
+    </header>
 
-        <!-- Tìm kiếm -->
-        <div class="search-container">
-            <input type="search" id="txtsearch" placeholder="Tìm kiếm" />
-            <button type="button" id="btnsearch" class="btn btn-primary " style="background-color:white;border:none;" >
-                <i class="fas fa-search"></i>
-            </button>
-        </div>
-        <!-- Các biểu tượng khác -->
-        <div class="icon-container">
-            <a href="@Url.Action("User", "User")">
-                <i class="fas fa-user"></i> <!-- Icon người dùng -->
-            </a>
-            <a asp-controller="Sale" asp-action="Cart">
-                <i class="fas fa-shopping-cart"></i> <!-- Icon giỏ hàng -->
-            </a>
-            <a href="#">
-                <i class="fas fa-flag"></i> <!-- Icon quốc kỳ (thay bằng icon khác nếu có) -->
-            </a>
-
-        </div>
-        <partial name="_LoginPartial" />
-        </div>
-    </section>
-    
-    <div class="container">
+    <!-- Main Content Container -->
+    <div class="container my-4 flex-grow-1">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
-    <section class="footer clearfix bg-footer py-4">
+
+    <!-- Footer Section -->
+    <footer class="bg-dark text-white-50 pt-5 pb-3 mt-auto">
         <div class="container">
-            <div class="row">
-                <div class="col-md-3">
-                    <h3 class="text-light">Chúng Tôi là ai?</h3>
+            <div class="row g-4">
+                <div class="col-md-3 col-sm-6">
+                    <h5 class="text-white mb-3 fw-bold">Chúng Tôi Là Ai?</h5>
+                    <p class="small">Cửa hàng thời trang chất lượng hàng đầu, cung cấp các sản phẩm quần áo đa dạng cho nam, nữ và trẻ em với phong cách hiện đại.</p>
                 </div>
-                <div class="col-md-3">
-                    <h3 class="text-light">Chính Sách</h3>
+                <div class="col-md-3 col-sm-6">
+                    <h5 class="text-white mb-3 fw-bold">Chính Sách</h5>
+                    <ul class="list-unstyled small d-grid gap-2">
+                        <li><a href="#" class="text-white-50 text-decoration-none">Chính sách đổi trả</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Chính sách bảo mật</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Điều khoản dịch vụ</a></li>
+                        <li><a href="#" class="text-white-50 text-decoration-none">Phương thức vận chuyển</a></li>
+                    </ul>
                 </div>
-                <div class="col-md-3">
-                    <h3 class="text-light">Địa Chỉ</h3>
+                <div class="col-md-3 col-sm-6">
+                    <h5 class="text-white mb-3 fw-bold">Địa Chỉ</h5>
+                    <p class="small mb-1"><i class="fas fa-map-marker-alt me-2"></i> Thành phố Hồ Chí Minh, Việt Nam</p>
+                    <p class="small mb-1"><i class="fas fa-phone me-2"></i> Hotline: 1900 xxxx</p>
+                    <p class="small"><i class="fas fa-envelope me-2"></i> Email: support@clothes.com</p>
                 </div>
-                <div class="col-md-3">
-                    <h3 class="text-light">Hỗ trợ</h3>
+                <div class="col-md-3 col-sm-6">
+                    <h5 class="text-white mb-3 fw-bold">Hỗ Trợ</h5>
+                    <p class="small">Đăng ký nhận tin tức mới nhất về các chương trình khuyến mãi:</p>
+                    @* <div class="input-group input-group-sm mb-3">
+                        <input type="text" class="form-control" placeholder="Email của bạn..." aria-label="Email">
+                        <button class="btn btn-danger" type="button">Gửi</button>
+                    </div> *@
+                </div>
+            </div>
+
+            <hr class="my-4 border-secondary">
+
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-start small">
+                    Bản quyền thuộc về <span class="fw-bold text-white">Nhóm 11</span> &copy; @DateTime.Now.Year
+                </div>
+                <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
+                    <a href="#" class="text-white-50 me-3"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="text-white-50 me-3"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-white-50"><i class="fab fa-tiktok"></i></a>
                 </div>
             </div>
         </div>
-    </section>
-    <section class="copyright clearfix bg-footer py-2 ">
-        <div class="container border-top border-light">
-            <div class="row">
-                <div class="col-md-6 text-light">
-                    Bảng quyền thuộc về Nhóm 11</div>
-                <div class="col-md-6"></div>
-            </div>
-        </div>
-    </section>
-@*      <script src="~/lib/jquery/dist/jquery.min.js"></script> *@
+    </footer>
+
+    <!-- Scripts -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-@*     <script src="~/lib/jquery"></script> *@
     @RenderSection("footer", required: false)
-@*      @RenderSection("scriptsproduct", required: false) *@
     @await RenderSectionAsync("Scripts", required: false)
-@*     @section scripts {
-            <script src="~/js/Getproduct.js"></script>
-    } *@
     <script src="~/js/Getproduct.js"></script>
     <script src="~/js/Layout.js"></script>
 </body>
-
 </html>

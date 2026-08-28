@@ -2,6 +2,7 @@
 using Clothes_DOTNET.Models;
 using Clothes_DOTNET.Service;
 using CLothes_DOTNET.ExtendMethods;
+using CLothes_DOTNET.Models;
 using CLothes_DOTNET.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -122,9 +123,12 @@ namespace Clothes_DOTNET
             app.UseAuthorization();
 
             app.MapControllerRoute(
+                name: "areas",
+                pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}");
+
+            app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
-
             app.Run();
 
         }

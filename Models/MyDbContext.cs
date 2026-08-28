@@ -8,7 +8,7 @@ using System.Reflection.Emit;
 namespace Clothes_DOTNET.Models
 {
 	public class MyDbContext : IdentityDbContext<AppUser>
-	{
+    {
 		public MyDbContext(DbContextOptions<MyDbContext> options) : base(options)
 		{
 
@@ -19,12 +19,6 @@ namespace Clothes_DOTNET.Models
 
 			// Nếu muốn thay đổi tên bảng hoặc tùy chỉnh thêm
 			builder.Entity<AppUser>().ToTable("Users"); // Đảm bảo tên bảng là 'Users'
-			builder.Entity<IdentityRole>().ToTable("Roles");
-			builder.Entity<IdentityUserRole<string>>().ToTable("UserRoles");
-			builder.Entity<IdentityUserClaim<string>>().ToTable("UserClaims");
-			builder.Entity<IdentityUserLogin<string>>().ToTable("UserLogins");
-			builder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
-			builder.Entity<IdentityUserToken<string>>().ToTable("UserTokens");
 			builder.Entity<Product>().ToTable("product");
 			builder.Entity<Category>().ToTable("category");
             builder.Entity<Order>().ToTable("order");
@@ -38,8 +32,6 @@ namespace Clothes_DOTNET.Models
             builder.Entity<Size>().ToTable("Size");
             builder.Entity<ProductVariant>().ToTable("ProductVariant");
             
-            builder.Entity<Roles>().ToTable("Roles");
-            builder.Entity<RoleClaim>().ToTable("RoleClaims");
 
 
         }
@@ -55,7 +47,6 @@ namespace Clothes_DOTNET.Models
         public DbSet<Color> Colors { get; set; }
         public DbSet<Size> Sizes { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
-        public DbSet<Roles> Roles { get; set; }
-        public DbSet<RoleClaim> RoleClaims { get; set; }
+
     }
 }

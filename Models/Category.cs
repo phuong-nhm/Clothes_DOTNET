@@ -19,7 +19,7 @@ namespace Clothes_DOTNET.Models
         public int Category_claim_Id { get; set; }
         
         [ForeignKey("Category_claim_Id")]
-        [JsonIgnore]
+        //[JsonIgnore]
         public CategoryClaim claim { get; set; }
         public ICollection<Product> Products { get; set; }
 

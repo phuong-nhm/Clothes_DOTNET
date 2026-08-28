@@ -23,7 +23,7 @@ namespace CLothes_DOTNET.Areas.Admin.Controllers
         {
             ViewBag.searchString = searchString;
             ViewBag.CategoryClaim = db.CategoryClaims.Select(d => d);
-            var danhmucs = db.Categories.Include("CategoryClaim").Select(p => p);
+            var danhmucs = db.Categories.Include(c=> c.claim).Select(p => p);
             if (!String.IsNullOrEmpty(searchString))
             {
                 danhmucs = danhmucs.Where(sp => sp.Name.Contains(searchString));
