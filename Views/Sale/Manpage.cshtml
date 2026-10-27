@@ -1,107 +1,153 @@
 @{
-    ViewData["Title"] = "Man Page";
-}
-@{
+    ViewData["Title"] = "Đồ Nam";
     Layout = "_Layout";
 }
 @using CLothes_DOTNET.Models
 @model IEnumerable<Products>
 
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb bg-transparent p-0">
+        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")" class="text-dark text-decoration-none">Trang chủ</a></li>
+        <li class="breadcrumb-item active text-muted" aria-current="page">Nam</li>
+    </ol>
+</nav>
 
-<!DOCTYPE html>
-<html lang="en">
+<!-- Page Title -->
+<div class="mb-5">
+    <h1 class="fw-bold fs-2 text-dark mb-2">Bộ Sưu Tập Nam</h1>
+    <p class="text-muted">Khám phá những trang phục nam thanh lịch và hiện đại</p>
+</div>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đồ Nam - Web Bán Hàng</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
-        integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
-        crossorigin="anonymous" />
-    <link rel="stylesheet" href="~/css/Manpage.css" />
-    <title>@ViewData["Title"]</title>
-</head>
-<style>
-    .buy-link {
-        color: white !important;
-        /* Màu chữ */
-        text-decoration: none !important;
-        /* Xóa gạch chân */
-    }
-
-    .buy-link:hover {
-        color: #6fe2ac;
-        /* Màu khi hover (tuỳ chọn) */
-    }
-</style>
-<div class="man-container">
-    <div class="breadcrumb">
-        <a href="@Url.Action("Index", "Home")" >Trang chủ</a> &gt; <a href="@Url.Action("Manpage", "Sale")">Nam</a>
-    </div>
-
-    <div class="content">
-        <!-- Phần bên trái (bộ lọc) -->
-        <div class="filters">
-            <h3>Bộ lọc</h3>
+<!-- Layout: Sidebar Filters & Products -->
+<div class="row g-4 mb-5">
+    <!-- Sidebar Filters -->
+    <div class="col-lg-3">
+        <div class="bg-light rounded-3 p-4 position-sticky" style="top: 80px;">
+            <h5 class="fw-bold text-dark mb-4">Bộ Lọc</h5>
+            
             <form>
-                <label for="price">Giá:</label>
-                <input type="range" id="price" name="price" min="0" max="1000000" step="10000">
-                <label for="category">Danh mục:</label>
-                <select id="category" name="category">
-                    <option value="clothing">Trang phục</option>
-                    <option value="accessories">Phụ kiện</option>
-                    <option value="shoes">Giày dép</option>
-                </select>
-                <!-- Thêm các bộ lọc khác nếu cần -->
+                <!-- Price Filter -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-dark mb-2">Khoảng Giá</label>
+                    <input type="range" class="form-range" id="priceFilter" min="0" max="1000000" step="10000" value="1000000">
+                    <small class="text-muted d-block mt-1">Tối đa: <span id="priceValue">1.000.000</span>đ</small>
+                </div>
+
+                <!-- Category Filter (nếu cần) -->
+                <div class="mb-4">
+                    <label class="form-label fw-semibold text-dark mb-2">Danh Mục</label>
+                    <select class="form-select form-select-sm border-secondary-subtle rounded-2" id="categoryFilter">
+                        <option value="">Tất cả</option>
+                        <option value="clothing">Trang phục</option>
+                        <option value="accessories">Phụ kiện</option>
+                        <option value="shoes">Giày dép</option>
+                    </select>
+                </div>
+
+                <!-- Apply Button -->
+                <button type="button" class="btn btn-dark w-100 rounded-3" onclick="applyFilters()">Áp Dụng</button>
             </form>
         </div>
+    </div>
 
-        <!-- Phần bên phải (sản phẩm) -->
-        <div class="products">
-            <h2>Danh sách sản phẩm</h2>
-            <div class="product-container">
-                <!-- Products will be displayed here -->
+    <!-- Products Grid -->
+    <div class="col-lg-9">
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-2 row-cols-lg-3 g-4">
+            @if (Model != null && Model.Any())
+            {
                 @foreach (var product in Model)
                 {
-                    <div class="product-item">
-                        <!-- Thêm thẻ <a> bao quanh toàn bộ sản phẩm để chuyển hướng đến chi tiết -->
-                        <a href="@Url.Action("Product", "Sale", new { id = product.Id })" class="product-link">
-                            <img src="@Url.Content(product.ImageUrl)" alt="@product.Name" class="product-image">
-                        </a>
-                        <h2 class="product-name">@product.Name</h2>
-                        <p class="product-description">@product.Description</p>
-                        <p class="product-price">@product.Price.ToString("N0")đ</p> <!-- Format giá -->
-                        <!-- Nút mua hàng -->
-                        <button class="buy-button">
-                            <a href="@Url.Action("Order", "User", new { id = product.Id })" class="buy-link">
-                                <i class="fas fa-shopping-cart"></i> Mua ngay
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm rounded-3 overflow-hidden position-relative">
+                            <a href="@Url.Action("Product", "Sale", new { id = product.Id })" class="text-decoration-none">
+                                <div class="overflow-hidden" style="height: 280px;">
+                                    <img src="@Url.Content(product.ImageUrl)" alt="@product.Name" class="w-100 h-100 object-fit-cover" style="transition: transform .4s ease;">
+                                </div>
                             </a>
-                        </button>
+                            <div class="card-body d-flex flex-column p-3">
+                                <h6 class="card-title fw-semibold text-dark text-truncate mb-2">
+                                    <a href="@Url.Action("Product", "Sale", new { id = product.Id })" class="text-dark text-decoration-none">@product.Name</a>
+                                </h6>
+                                <p class="text-muted small mb-3 flex-grow-1">@product.Description</p>
+                                <div class="mb-3">
+                                    <span class="fw-bold text-dark fs-6">@product.Price.ToString("N0")đ</span>
+                                </div>
+                                <a href="@Url.Action("Order", "User", new { id = product.Id })" class="btn btn-dark btn-sm w-100 rounded-pill fw-medium">Mua ngay</a>
+                            </div>
+                        </div>
                     </div>
                 }
-            </div>
+            }
+            else
+            {
+                <div class="col-12 text-center py-5">
+                    <p class="text-muted fs-6">Không có sản phẩm nào</p>
+                </div>
+            }
         </div>
-        <!-- Phân trang -->
 
+        <!-- Pagination -->
+        @if (ViewBag.TotalPages > 1)
+        {
+            <nav aria-label="Page navigation" class="d-flex justify-content-center mt-5">
+                <ul class="pagination gap-2">
+                    @if (ViewBag.PageNumber > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link rounded-3 border-0 bg-light text-dark fw-medium" href="@Url.Action("Manpage", new { page = ViewBag.PageNumber - 1 })">← Trước</a>
+                        </li>
+                    }
+
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        if (i == ViewBag.PageNumber)
+                        {
+                            <li class="page-item">
+                                <span class="page-link rounded-3 border-0 bg-dark text-white fw-medium">@i</span>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="page-item">
+                                <a class="page-link rounded-3 border-0 bg-light text-dark fw-medium" href="@Url.Action("Manpage", new { page = i })">@i</a>
+                            </li>
+                        }
+                    }
+
+                    @if (ViewBag.PageNumber < ViewBag.TotalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link rounded-3 border-0 bg-light text-dark fw-medium" href="@Url.Action("Manpage", new { page = ViewBag.PageNumber + 1 })">Sau →</a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        }
     </div>
 </div>
-<div class="pagination">
-    @if (ViewBag.PageNumber > 1)
-    {
-        <a href="@Url.Action("Manpage", new { page = ViewBag.PageNumber - 1 })">Previous</a>
+
+<script>
+    document.getElementById('priceFilter').addEventListener('input', function(e) {
+        const value = parseInt(e.target.value);
+        document.getElementById('priceValue').textContent = value.toLocaleString('vi-VN');
+    });
+
+    function applyFilters() {
+        const price = document.getElementById('priceFilter').value;
+        const category = document.getElementById('categoryFilter').value;
+        // Thêm logic lọc ở đây
+        console.log('Price:', price, 'Category:', category);
     }
 
-    @for (int i = 1; i <= ViewBag.TotalPages; i++)
-    {
-        <a href="@Url.Action("Manpage", new { page = i })" class="@(i == ViewBag.PageNumber ? "current" : "")">@i</a>
-    }
-
-    @if (ViewBag.PageNumber < ViewBag.TotalPages)
-    {
-        <a href="@Url.Action("Manpage", new { page = ViewBag.PageNumber + 1 })">Next</a>
-    }
-</div>
-<script src="site.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.css"></script>
-
-</html>
+    // Hover zoom effect
+    document.querySelectorAll('.overflow-hidden img').forEach(img => {
+        const parent = img.parentElement;
+        parent.addEventListener('mouseenter', function() {
+            img.style.transform = 'scale(1.08)';
+        });
+        parent.addEventListener('mouseleave', function() {
+            img.style.transform = 'scale(1)';
+        });
+    });
+</script>

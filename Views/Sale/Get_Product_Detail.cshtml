@@ -1,400 +1,155 @@
 @{
-    ViewData["Title"] = "Product Page";
-    var sizes = ViewData["Sizes"] as List<Size>;
-    var colors = ViewData["Colors"] as List<Color>;
-    var ProductColorVarients = ViewData["ProductColorVarients"] as List<ProductVariant>;
-    var ProductSizeVarients = ViewData["ProductSizeVarients"] as List<ProductVariant>;
+    ViewData["Title"] = "Chi Tiết Sản Phẩm";
+    var sizes = ViewData["Sizes"] as List<Size> ?? new List<Size>();
+    var colors = ViewData["Colors"] as List<Color> ?? new List<Color>();
+    var ProductColorVarients = ViewData["ProductColorVarients"] as List<ProductVariant> ?? new List<ProductVariant>();
+    var ProductSizeVarients = ViewData["ProductSizeVarients"] as List<ProductVariant> ?? new List<ProductVariant>();
     var boolcolor = true;
     var boolsize = true;
-}
-@{
     Layout = "_Layout";
 }
 @using Clothes_DOTNET.Models
 @model Product
 
-<!DOCTYPE html>
-<html lang="en">
+<!-- Breadcrumb -->
+<nav aria-label="breadcrumb" class="mb-4">
+    <ol class="breadcrumb bg-transparent p-0">
+        <li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")" class="text-dark text-decoration-none">Trang chủ</a></li>
+        <li class="breadcrumb-item active text-muted" aria-current="page">Chi tiết sản phẩm</li>
+    </ol>
+</nav>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product - Web Bán Hàng</title>
-    <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
-        integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
-        crossorigin="anonymous" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css" rel="stylesheet">
-
-    <title>@ViewData["Title"]</title>
-</head>
-<style>
-    /* Container cho chi tiết sản phẩm */
-.product-detail {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 32px;
-    max-width: 100%;
-    background-color: aliceblue;
-    padding: 10px 10px 10px 10px
-}
-
-/* Phần hình ảnh sản phẩm */
-.image-gallery-detail {
-    flex: 1;
-    max-width: 550px;
-    margin-right: 20px;
-}
-
-/* Hình ảnh sản phẩm chính */
-.product-image-detail {
-    width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-/* Phần thông tin sản phẩm */
-.product-info {
-    flex: 1;
-    max-width: 500px;
-}
-
-/* Tên sản phẩm */
-.product-info h1 {
-    font-size: 28px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    color: #333;
-}
-
-/* Thông tin chung về sản phẩm */
-.product-info p {
-    font-size: 16px;
-    margin-bottom: 10px;
-    color: #555;
-}
-
-/* Phân cách các phần thông tin */
-hr {
-    margin: 20px 0;
-    border: 1px solid #ddd;
-}
-
-.colors {
-    display: flex;
-    gap: 10px; /* Khoảng cách giữa các màu */
-    justify-content: flex-start;
-    align-items: center;
-}
-
-.color-circle {
-    display: inline-block;
-    width: 30px; /* Đường kính của vòng tròn */
-    height: 30px;
-    border-radius: 50%; /* Bo tròn để tạo thành vòng tròn */
-    border: 2px solid #ddd; /* Viền màu xám nhạt */
-    cursor: pointer;
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Hiệu ứng khi hover */
-}
-
-.color-circle:hover {
-    transform: scale(1.1); /* Phóng to khi hover */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Đổ bóng nhẹ khi hover */
-}
-
-/* Hiển thị màu sắc khi màu đã được chọn */
-input[type="radio"]:checked + label.color-circle {
-    border-color: #333; /* Đổi màu viền khi được chọn */
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); /* Thêm bóng khi được chọn */
-}
-
-
-label {
-    padding: 8px 16px;
-    cursor: pointer;
-    border-radius: 20px;
-    transition: background-color 0.3s;
-}
-
-label:hover {
-    background-color: #f1f1f1;
-}
-
-input[type="radio"]:checked + label {
-    background-color: #4CAF50;
-    color: #fff;
-}
-
-/* Thông tin số lượng */
-#quantityDisplay {
-    font-size: 16px;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-/* Phần nhập số lượng */
-.quantity .form-label {
-    font-size: 16px;
-    font-weight: bold;
-}
-
-.input-group-text {
-    background-color: #f0f0f0;
-    border: 1px solid #ddd;
-}
-
-.form-control {
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 8px;
-}
-
-/* Hiển thị giá tiền */
-#Price {
-    font-size: 20px;
-    font-weight: bold;
-    color: #e74c3c;
-    margin-top: 20px;
-}
-
-/* Nút hành động */
-.actions {
-    margin-top: 30px;
-}
-
-.add-to-cart, .buy-now {
-    padding: 12px 24px;
-    font-size: 16px;
-    font-weight: bold;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    margin-right: 16px;
-}
-.buy-now {
-    background-color: #3498db;
-    color: #fff;
-}
-.add-to-cart {
-    background-color: #e74c3c; /* Màu nền nút */
-    color: white; /* Màu văn bản nút */
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    font-size: 16px;
-}
-
-.add-to-cart:hover {
-    background-color: #c0392b; /* Màu nền khi hover */
-}
-
-.add-to-cart i {
-    font-size: 20px; /* Đặt kích thước cho icon */
-}
-
-.buy-now:hover {
-    background-color: #2980b9;
-}
-
-/* Thêm padding và margin cho các thành phần nhỏ */
-input[type="hidden"] {
-    display: none;
-}
-
-input[type="radio"]:checked + label {
-    background-color: #007BFF;
-    color: white;
-}
-/* Định dạng chung cho breadcrumb */
-.breadcrumb {
-    margin-top: 10px;
-    background-color: #f8f9fa; /* Nền màu sáng */
-    padding: 10px 20px; /* Khoảng cách xung quanh */
-    border-radius: 5px; /* Bo góc */
-    font-size: 16px; /* Kích thước chữ */
-    display: inline-block; /* Đảm bảo breadcrumb có thể hiển thị theo dòng */
-}
-
-/* Định dạng cho các liên kết trong breadcrumb */
-.breadcrumb a {
-    color: #007bff; /* Màu chữ của liên kết */
-    text-decoration: none; /* Xóa gạch dưới */
-    font-weight: 500; /* Đậm chữ */
-}
-
-/* Thêm hiệu ứng hover cho các liên kết */
-.breadcrumb a:hover {
-    color: #0056b3; /* Màu chữ khi hover */
-    text-decoration: underline; /* Gạch dưới khi hover */
-}
-
-/* Định dạng cho dấu phân cách giữa các liên kết */
-.breadcrumb::after {
-    color: #6c757d; /* Màu xám cho dấu phân cách */
-}
-
-/* Loại bỏ dấu phân cách ở liên kết cuối */
-.breadcrumb a:last-child::after {
-    content: ""; /* Không hiển thị dấu phân cách sau liên kết cuối */
-}
-
-
-</style>
-@{
-    ViewData["Title"] = "Chi Tiết Sản Phẩm";
-}
-<div class="breadcrumb">
-    <a href="@Url.Action("Index", "Home")">Trang chủ</a> &gt; <a href="@Url.Action("Product", "Sale")">Chi Tiết Sản
-        phẩm</a>
-</div>
-<div class="product-detail">
-    <div class="image-gallery-detail">
-        @if (Model.image != null)
-        {
-            // Chuyển đổi byte[] thành Base64 string
-            var imageSrc = $"/UserImage/images/{Model.image}";; // Điều chỉnh type image nếu cần
-            <img src="@imageSrc" alt="@Model.name" class="product-image-detail" />
-        }
-        else
-        {
-            <img src="" alt="Default Image" class="product-image" /> <!-- Hình ảnh mặc định nếu không có -->
-        }
-        <!-- Các ảnh phụ -->
-@*         <div class="additional-images" id="thumbnail-container">
-            <img src="@Url.Content(Model.ImageUrl)" alt="@Model.Name" class="thumbnail"
-                onclick="changeMainImage(this)" />
-
-            @foreach (var image in Model.AdditionalImages)
+<!-- Product Detail Section -->
+<div class="row g-5 mb-5">
+    <!-- Product Image -->
+    <div class="col-lg-5">
+        <div class="rounded-3 overflow-hidden bg-light">
+            @if (Model.image != null)
             {
-                <img src="@Url.Content(image)" alt="@Model.Name" class="thumbnail" onclick="changeMainImage(this)" />
+                var imageSrc = $"/UserImage/images/{Model.image}";
+                <img src="@imageSrc" alt="@Model.name" class="w-100" style="height: 500px; object-fit: cover;">
             }
-        </div> *@
+            else
+            {
+                <div class="w-100 bg-secondary d-flex align-items-center justify-content-center" style="height: 500px;">
+                    <span class="text-light">No image available</span>
+                </div>
+            }
+        </div>
     </div>
 
-    <div class="product-info">
-        <h1>@Model.name</h1>
-        <p><strong>Mã sản phẩm: </strong>@Model.ID</p>
-        <p><strong>Giá:</strong> @Model.sellprice.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))
-        </p>
-@*          <p><strong>Còn lại:</strong> @Model.Stock sản phẩm</p> *@
-
-        <hr />
+    <!-- Product Info -->
+    <div class="col-lg-7">
         <form asp-controller="Sale" asp-action="AddToCart" method="post">
             <input type="hidden" id="productId" name="productId" value="@Model.ID">
-           @*  <input type="hidden" id="Price" name="Price" value="@Model.sellprice"> *@
-             <div>
-            <strong>Màu sắc:</strong>
-            <div class="colors">
-                @foreach (var color in colors)
-                {
-                    // Kiểm tra xem sản phẩm có màu sắc này hay không
-                    boolcolor = ProductColorVarients.Any(pro => pro.ColorID == color.ColorID);
-                    if (boolcolor)
+
+            <!-- Title & ID -->
+            <h1 class="fw-bold fs-2 text-dark mb-2">@Model.name</h1>
+            <p class="text-muted small mb-3">Mã sản phẩm: <span class="text-dark fw-semibold">@Model.ID</span></p>
+
+            <!-- Price -->
+            <div class="mb-4">
+                <span class="fw-bold fs-4 text-dark" id="Price">@Model.sellprice.ToString("N0")đ</span>
+                <input type="hidden" id="price" name="price" value="@Model.sellprice">
+            </div>
+
+            <!-- Divider -->
+            <hr class="my-4">
+
+            <!-- Colors -->
+            <div class="mb-4">
+                <label class="fw-semibold text-dark d-block mb-3">Màu Sắc</label>
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var color in colors)
                     {
-                        <input type="radio" class="btn-check" name="color-outlined" id="color_@color.ColorID-outlined" onchange="updateQuantityDisplay()" autocomplete="off" value="@color.ColorID">
-                        <label class="btn btn-outline-primary" for="color_@color.ColorID-outlined">@color.ColorName</label>
+                        boolcolor = ProductColorVarients.Any(pro => pro.ColorID == color.ColorID);
+                        if (boolcolor)
+                        {
+                            <input type="radio" class="btn-check" name="color-outlined" id="color_@color.ColorID-outlined" onchange="updateQuantityDisplay()" autocomplete="off" value="@color.ColorID">
+                            <label class="btn btn-outline-dark btn-sm fw-medium rounded-pill px-3" for="color_@color.ColorID-outlined">@color.ColorName</label>
+                        }
                     }
-                }
+                </div>
                 <input type="hidden" id="selectedColorId" name="selectedColorId" value="">
                 <input type="hidden" id="selectedColorName" name="selectedColorName" value="">
             </div>
-        <div>
-            <strong>Kích thước:</strong>
-            <div class="sizes">
 
-                @foreach (var size in sizes)
-                {
-                    @foreach(var pro in ProductSizeVarients)
-                        {
-                            if(pro.SizeID==size.SizeID)
-                            {
-                                boolsize = true;
-                                break;
-
-                            }
-                            else
-                            {
-                                boolsize = false;
-                                
-                            }
-                        }
-                        if(boolsize)
-                        {                     
-                             <input type="radio" class="btn-check" name="size-outlined" id="size_@size.SizeID-outlined"  onchange="updateQuantityDisplay()" autocomplete="off"value="@size.SizeID">
-                            <label class="btn btn-outline-secondary" for="size_@size.SizeID-outlined">@size.SizeName</label>
-                        }
-                        else
-                        {
-                        
-                            <input type="radio" class="btn-check" name="size-outlined" id="size_@size.SizeID-outlined" autocomplete="off"value="@size.SizeID" disabled >
-                            <label class="btn btn-outline-secondary" for="size_@size.SizeID-outlined">@size.SizeName</label>
-                        }
-                     boolsize = true;
-                   
-
-                   
-                }
+            <!-- Sizes -->
+            <div class="mb-4">
+                <label class="fw-semibold text-dark d-block mb-3">Kích Thước</label>
+                <div class="d-flex flex-wrap gap-2">
+                    @foreach (var size in sizes)
+                    {
+                        boolsize = ProductSizeVarients.Any(pro => pro.SizeID == size.SizeID);
+                        <input type="radio" class="btn-check" name="size-outlined" id="size_@size.SizeID-outlined" onchange="updateQuantityDisplay()" autocomplete="off" value="@size.SizeID" @(boolsize ? "" : "disabled")>
+                        <label class="btn btn-outline-dark btn-sm fw-medium rounded-pill px-3 @(boolsize ? "" : "disabled")" for="size_@size.SizeID-outlined">@size.SizeName</label>
+                    }
+                </div>
                 <input type="hidden" id="selectedSizeId" name="selectedSizeId" value="">
                 <input type="hidden" id="selectedSizeName" name="selectedSizeName" value="">
             </div>
-        </div>
-        <div id="quantityDisplay">Total Quantity: 0</div>
-        <div class="quantity">
-            <div class="mb-3">
-                <label for="quantity" class="form-label">Số lượng</label>
-                <div class="input-group" style="width:20%">
-                    <span class="input-group-text"><i class="bi bi-cart"></i></span>
-                    <input type="number" class="form-control" id="Count" name="Count" value="1">
+
+            <!-- Quantity -->
+            <div class="mb-4">
+                <label class="fw-semibold text-dark d-block mb-2">Số Lượng</label>
+                <div class="input-group" style="width: 140px;">
+                    <button class="btn btn-outline-dark" type="button" onclick="decreaseQty()">−</button>
+                    <input type="number" class="form-control text-center fw-semibold" id="Count" name="Count" value="1" min="1">
+                    <button class="btn btn-outline-dark" type="button" onclick="increaseQty()">+</button>
                 </div>
             </div>
-        </div>
-         <div id="Price">Giá tiền: @Model.sellprice</div>
-         <input type="hidden" id="price" name="price"  value=" @Model.sellprice">
-        <div class="actions">
-        <button type="submit" class="add-to-cart" name="action" value="addtocart" onclick="setSelectedOptions()">
-            <i class="bi bi-cart" style="color: white; margin-right: 8px;"></i> Thêm vào giỏ
-        </button>
-            <button type="submit" class="buy-now" onclick="setSelectedOptions()" name="action" value="buynow">Mua Ngay</button>
-        </div>
-         <input type="hidden" id="ProductIdVariant" name="ProductIdVariant" value="">
+
+            <div id="quantityDisplay" class="text-muted small mb-4">Tồn kho: Chọn màu và kích thước để xem</div>
+
+            <!-- Divider -->
+            <hr class="my-4">
+
+            <!-- Action Buttons -->
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-dark btn-lg flex-grow-1 rounded-3 fw-semibold" name="action" value="addtocart" onclick="setSelectedOptions()">
+                    Thêm Vào Giỏ
+                </button>
+                <button type="submit" class="btn btn-outline-dark btn-lg flex-grow-1 rounded-3 fw-semibold" name="action" value="buynow" onclick="setSelectedOptions()">
+                    Mua Ngay
+                </button>
+            </div>
+
+            <input type="hidden" id="ProductIdVariant" name="ProductIdVariant" value="">
         </form>
     </div>
 </div>
-<script src="site.js"></script>
-<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.css"></script>
-<script src="site.js"></script>
-<!-- JavaScript -->
+
+<script src="~/js/GetColor_Size.js"></script>
 <script>
-    function changeMainImage(thumbnail) {
-        const mainImage = document.getElementById("main-image");
-        const thumbnailContainer = document.getElementById("thumbnail-container");
-
-        if (mainImage && thumbnailContainer) {
-            const currentMainImage = mainImage.src;
-            mainImage.src = thumbnail.src;
-
-            let existingThumbnail = Array.from(thumbnailContainer.children).find(img => img.src === currentMainImage);
-
-            if (!existingThumbnail) {
-                const newThumbnail = document.createElement("img");
-                newThumbnail.src = currentMainImage;
-                newThumbnail.alt = "Previous Main Image";
-                newThumbnail.classList.add("thumbnail");
-                newThumbnail.onclick = function () {
-                    changeMainImage(newThumbnail);
-                };
-                thumbnailContainer.appendChild(newThumbnail);
-            }
-        } else {
-            console.error("main-image or thumbnail-container not found.");
-        }
+    function decreaseQty() {
+        const input = document.getElementById('Count');
+        if (input.value > 1) input.value = parseInt(input.value) - 1;
     }
 
+    function increaseQty() {
+        const input = document.getElementById('Count');
+        input.value = parseInt(input.value) + 1;
+    }
+
+    function setSelectedOptions() {
+        const colorRadio = document.querySelector('input[name="color-outlined"]:checked');
+        const sizeRadio = document.querySelector('input[name="size-outlined"]:checked');
+
+        if (colorRadio) document.getElementById('selectedColorId').value = colorRadio.value;
+        if (sizeRadio) document.getElementById('selectedSizeId').value = sizeRadio.value;
+    }
+
+    function updateQuantityDisplay() {
+        const color = document.querySelector('input[name="color-outlined"]:checked');
+        const size = document.querySelector('input[name="size-outlined"]:checked');
+
+        if (color && size) {
+            fetch(`/Sale/GetProductVariantQuantity?sizeId=${size.value}&colorId=${color.value}&productId=@Model.ID`)
+                .then(r => r.json())
+                .then(data => {
+                    document.getElementById('quantityDisplay').textContent = `Tồn kho: ${data.quantity} sản phẩm`;
+                    document.getElementById('ProductIdVariant').value = data.id;
+                });
+        }
+    }
 </script>
-     <script src="~/js/GetColor_Size.js"></script>
-
-
-
-</html>

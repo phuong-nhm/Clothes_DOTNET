@@ -1,36 +1,145 @@
 @{
-    ViewData["Title"] = "Cart Page";
-}
-@{
+    ViewData["Title"] = "Giỏ Hàng";
     Layout = "_Layout";
 }
-@using CLothes_DOTNET.Models
-@model IEnumerable<Products>
+@using Clothes_DOTNET.Models
+@model List<ProductDTO>
 
+<!-- Page Title -->
+<div class="mb-5">
+    <h1 class="fw-bold fs-2 text-dark mb-2">Giỏ Hàng</h1>
+    <p class="text-muted">Xem lại và quản lý các sản phẩm của bạn</p>
+</div>
 
-<!DOCTYPE html>
-<html lang="en">
+@if (Model == null || Model.Count == 0)
+{
+    <!-- Empty Cart -->
+    <div class="text-center py-5">
+        <div class="mb-4">
+            <i class="bi bi-bag-x" style="font-size: 3rem; color: #ccc;"></i>
+        </div>
+        <h5 class="text-muted mb-3">Giỏ hàng của bạn trống</h5>
+        <p class="text-muted mb-4">Hãy thêm một số sản phẩm để bắt đầu</p>
+        <a href="@Url.Action("AllProduct", "Sale")" class="btn btn-dark btn-lg rounded-3 px-5">Tiếp tục mua sắm</a>
+    </div>
+}
+else
+{
+    <div class="row g-4 mb-5">
+        <!-- Cart Items -->
+        <div class="col-lg-8">
+            <div class="bg-light rounded-3 p-4">
+                <div class="table-responsive">
+                    <table class="table table-borderless mb-0">
+                        <thead class="border-bottom">
+                            <tr>
+                                <th class="fw-semibold text-dark">Sản Phẩm</th>
+                                <th class="text-center fw-semibold text-dark">Giá</th>
+                                <th class="text-center fw-semibold text-dark">Số Lượng</th>
+                                <th class="text-center fw-semibold text-dark">Tổng</th>
+                                <th class="text-center fw-semibold text-dark"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr class="border-bottom">
+                                    <td>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="@Url.Content(item.image)" alt="@item.name" class="rounded" style="width: 80px; height: 100px; object-fit: cover;">
+                                            <div>
+                                                <h6 class="fw-semibold text-dark mb-1">@item.name</h6>
+                                                <small class="text-muted">@item.color · @item.size</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        <span class="fw-semibold text-dark">@item.sellprice.ToString("N0")đ</span>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        <div class="input-group input-group-sm" style="width: 100px; margin: 0 auto;">
+                                            <button class="btn btn-outline-dark" type="button" onclick="decreaseQty(@item.productvariantid)">−</button>
+                                            <input type="number" class="form-control text-center fw-semibold qty-input-@item.productvariantid" value="@item.count" min="1" readonly>
+                                            <button class="btn btn-outline-dark" type="button" onclick="increaseQty(@item.productvariantid)">+</button>
+                                        </div>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        <span class="fw-bold text-dark fs-6 total-@item.productvariantid">@(item.sellprice * item.count).ToString("N0")đ</span>
+                                    </td>
+                                    <td class="text-center align-middle">
+                                        <a href="@Url.Action("RemoveCart", "Sale", new { productid = item.productvariantid })" class="btn btn-sm btn-outline-danger rounded-circle" title="Remove">
+                                            ×
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giỏ hàng - Web Bán Hàng</title>
-    <link rel="stylesheet" href="~/css/site.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css"
-        integrity="sha512-5A8nwdMOWrSz20fDsjczgUidUBR8liPYU+WymTZP1lmY9G6Oc7HlZv156XqnsgNUzTyMefFTcsFH/tnJE/+xBg=="
-        crossorigin="anonymous" />
-    <title>@ViewData["Title"]</title>
-</head>
-<style>
-    body{
-        background-color: antiquewhite;
-</style>
+        <!-- Cart Summary -->
+        <div class="col-lg-4">
+            <div class="bg-light rounded-3 p-4 position-sticky" style="top: 100px;">
+                <h5 class="fw-bold text-dark mb-4">Tóm Tắt Đơn Hàng</h5>
 
-<body>
-  <div>
-    <h1>Giỏ hàng</h1>
-  </div>
-    <script src="site.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.css"></script>
-</body> 
-</html>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted">Tạm tính:</span>
+                    <span class="fw-semibold text-dark" id="subtotal">
+                        @Model.Sum(x => x.sellprice * x.count).ToString("N0")đ
+                    </span>
+                </div>
+
+                <div class="d-flex justify-content-between mb-3 pb-3 border-bottom">
+                    <span class="text-muted">Vận chuyển:</span>
+                    <span class="fw-semibold text-dark">Miễn phí</span>
+                </div>
+
+                <div class="d-flex justify-content-between mb-4">
+                    <span class="fw-bold text-dark fs-6">Tổng cộng:</span>
+                    <span class="fw-bold text-dark fs-5" id="total">
+                        @Model.Sum(x => x.sellprice * x.count).ToString("N0")đ
+                    </span>
+                </div>
+
+                <button class="btn btn-dark btn-lg w-100 rounded-3 fw-semibold mb-3">Thanh Toán</button>
+                <a href="@Url.Action("AllProduct", "Sale")" class="btn btn-outline-dark btn-lg w-100 rounded-3 fw-semibold">
+                    Tiếp Tục Mua Sắm
+                </a>
+            </div>
+        </div>
+    </div>
+}
+
+<script>
+    function decreaseQty(productId) {
+        const input = document.querySelector('.qty-input-' + productId);
+        if (input.value > 1) {
+            input.value = parseInt(input.value) - 1;
+            updateCart(productId);
+        }
+    }
+
+    function increaseQty(productId) {
+        const input = document.querySelector('.qty-input-' + productId);
+        input.value = parseInt(input.value) + 1;
+        updateCart(productId);
+    }
+
+    function updateCart(productId) {
+        const quantity = document.querySelector('.qty-input-' + productId).value;
+        const price = parseInt(document.querySelector('.qty-input-' + productId).closest('tr').cells[1].textContent.replace(/\D/g, ''));
+        
+        // Update total for this item
+        const total = price * quantity;
+        document.querySelector('.total-' + productId).textContent = total.toLocaleString('vi-VN') + 'đ';
+
+        // Update cart on server
+        fetch('/Sale/UpdateCart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'productid=' + productId + '&quantity=' + quantity
+        }).then(r => r.ok && location.reload());
+    }
+</script>
